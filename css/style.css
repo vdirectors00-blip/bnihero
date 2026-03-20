@@ -1031,7 +1031,7 @@ section {
 
 /* ── Right: 피드 ── */
 .instagram-feed-wrap {
-  min-height: 480px;
+  min-height: 280px;
 }
 
 @media (max-width: 768px) {
@@ -1046,7 +1046,6 @@ section {
     gap: 16px;
   }
   .insta-desc { flex-basis: 100%; }
-  .instagram-feed-wrap { min-height: 560px; }
 
   /* Partner section — left align on mobile */
   .apply-partner-section { text-align: left; }
@@ -1886,9 +1885,21 @@ footer {
   #nav-menu.open { display: flex; }
 
   #nav-menu a {
-    padding: 12px 24px;
+    padding: 15px 24px;
     border-radius: 0;
     font-size: 1rem;
+  }
+
+  #nav-menu li:last-child {
+    padding: 10px 16px 6px;
+  }
+
+  #nav-menu a.nav-cta {
+    display: block;
+    text-align: center;
+    border-radius: 8px;
+    padding: 13px 24px;
+    margin: 0;
   }
 
   /* Pain grid */
