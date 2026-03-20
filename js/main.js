@@ -187,7 +187,7 @@ async function renderCalendar() {
       if (schedEntry) {
         const badge = document.createElement('span');
         badge.className = `cal-badge cal-badge-${schedEntry.meeting_type}`;
-        badge.textContent = schedEntry.meeting_type === 'offline' ? '송도 오크우드' : schedEntry.meeting_type === 'online' ? '온라인 화상회의' : '회의없음';
+        badge.textContent = schedEntry.meeting_type === 'offline' ? '조찬회의' : schedEntry.meeting_type === 'online' ? '화상회의' : '회의없음';
         cell.appendChild(badge);
         if (schedEntry.note) {
           const note = document.createElement('span');
@@ -198,7 +198,7 @@ async function renderCalendar() {
       } else {
         const badge = document.createElement('span');
         badge.className = 'cal-badge cal-badge-offline';
-        badge.textContent = '송도 오크우드';
+        badge.textContent = '조찬회의';
         cell.appendChild(badge);
       }
     }
@@ -251,6 +251,42 @@ async function initMembers() {
       openCardModal(btn.dataset.img, btn.dataset.name);
     });
   });
+
+  // Mobile expand/collapse toggle
+  const section = document.getElementById('members');
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'members-toggle-btn';
+  let expanded = false;
+
+  function applyToggleState() {
+    if (window.innerWidth <= 768) {
+      grid.classList.toggle('members-collapsed', !expanded);
+      toggleBtn.textContent = expanded ? '접기 ▲' : '열기 ▼';
+      toggleBtn.style.display = 'block';
+    } else {
+      grid.classList.remove('members-collapsed');
+      toggleBtn.style.display = 'none';
+    }
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    expanded = !expanded;
+    applyToggleState();
+    if (!expanded) {
+      const top = section.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+
+  const container = section.querySelector('.container');
+  container.insertBefore(toggleBtn, grid);
+  applyToggleState();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyToggleState, 150);
+  });
 }
 
 /* ── Business Card Modal ────────────────────────────────────── */
@@ -280,6 +316,23 @@ function closeCardModal() {
   const modal = document.getElementById('card-modal');
   if (modal) modal.classList.remove('active');
   document.body.style.overflow = '';
+}
+
+/* ── Apply Success Modal ────────────────────────────────────── */
+
+function openApplySuccessModal() {
+  const modal = document.getElementById('apply-success-modal');
+  if (!modal) return;
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  function close() {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  modal.querySelector('.apply-success-ok')?.addEventListener('click', close, { once: true });
+  modal.addEventListener('click', (e) => { if (e.target === modal) close(); }, { once: true });
 }
 
 /* ── Privacy Modal ──────────────────────────────────────────── */
@@ -344,8 +397,8 @@ function initApplyForm() {
 
     try {
       await submitApplication(payload);
-      showFormMessage('success', '참관 신청이 완료되었습니다! 곧 연락드리겠습니다.');
       form.reset();
+      openApplySuccessModal();
     } catch (err) {
       console.error(err);
       showFormMessage('error', '신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
@@ -494,7 +547,7 @@ async function initCountdown() {
 
     if (dateEl) {
       const [, mo, day] = meetingDateStr.split('-');
-      dateEl.textContent = `${parseInt(mo)}월 ${parseInt(day)}일 금요일`;
+      dateEl.textContent = `${parseInt(mo)}월 ${parseInt(day)}일 금요일 오전 6시 30분`;
     }
 
     function tick() {

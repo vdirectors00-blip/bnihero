@@ -7,8 +7,18 @@
   <meta name="description" content="BNI 히어로챕터 참관 신청 페이지. 매주 금요일 오전 6:30, 송도 오크우드 호텔에서 직접 모임을 경험해보세요." />
   <meta name="robots" content="noindex" />
   <link rel="canonical" href="https://bnihero.kr/apply" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bnihero.kr/apply" />
+  <meta property="og:title" content="BNI 히어로챕터 참관 신청" />
+  <meta property="og:description" content="매주 금요일 오전 6:30, 송도 오크우드 호텔에서 진행되는 사업가들의 비즈니스 모임에 직접 참관해보세요." />
+  <meta property="og:image" content="https://bnihero.kr/img/og-image.jpg" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BNI 히어로챕터 참관 신청" />
+  <meta name="twitter:description" content="매주 금요일 오전 6:30, 송도 오크우드 호텔에서 진행되는 사업가들의 비즈니스 모임." />
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
-  <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <link rel="stylesheet" href="css/style.css" />
@@ -49,6 +59,19 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
+  Apply Success Modal
+════════════════════════════════════════════════════════════ -->
+<div id="apply-success-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="apply-success-title">
+  <div class="modal-box apply-success-box">
+    <div class="apply-success-icon" aria-hidden="true">✓</div>
+    <h2 class="apply-success-title" id="apply-success-title">신청 완료!</h2>
+    <p class="apply-success-desc">참관 신청이 접수되었습니다.<br />담당자 확인 후 곧 연락드리겠습니다.</p>
+    <p class="apply-success-flow">신청 → 확인 연락 → 참가비 입금 → 참관 확정</p>
+    <button class="btn-primary apply-success-ok">확인</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
   Page Header
 ════════════════════════════════════════════════════════════ -->
 <main style="padding-top: 72px;">
@@ -81,7 +104,7 @@
   <div id="meeting-countdown" class="apply-countdown">
     <div class="countdown-inner">
       <div class="countdown-label-wrap">
-        <span class="countdown-label">다음 오프라인 회의까지</span>
+        <span class="countdown-label">다음 오프라인 회의</span>
         <span class="countdown-date" id="cd-date"></span>
       </div>
       <div class="countdown-display">
@@ -261,68 +284,32 @@
 ════════════════════════════════════════════════════════════ -->
   <section class="apply-partner-section" aria-labelledby="partner-heading">
     <div class="container">
+      <div class="partner-text-body">
 
-      <p class="partner-intro-text">
-        BNI는 상호간의 신뢰를 바탕으로<br />
-        <strong>고객을 공유하고 서로의 업을 대신해서 소개해주는 시스템</strong>입니다.<br />
-        Givers Gain 철학으로 내가 먼저 멤버들의 비즈니스를 성공시키고자 하는데 집중합니다.
-      </p>
+        <p class="partner-eyebrow">BNI 히어로챕터</p>
 
-      <h2 class="partner-headline" id="partner-heading">
-        "대표님의 <strong>비즈니스 파트너</strong>를 찾아보세요"
-      </h2>
+        <h2 class="partner-headline" id="partner-heading">
+          대표님의 <strong>비즈니스 파트너</strong>를<br />찾아보세요
+        </h2>
 
-      <div class="partner-grid" role="list">
-        <div class="partner-tile" role="listitem"><span class="pt-category">요식업 (한우)</span><span class="pt-company">유달구의 한우폭탄</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">노무사</span><span class="pt-company">노무법인 엠제이</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">보험설계사 인보험</span><span class="pt-company">바른보험 바른보상</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">생활가전 렌탈</span><span class="pt-company">호웨이</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">카드단말기 포스</span><span class="pt-company">(주)벙글다</span></div>
+        <div class="partner-text-rule"></div>
 
-        <div class="partner-tile" role="listitem"><span class="pt-category">보안, 방범CCTV</span><span class="pt-company">KT텔레캅</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">보험설계사 물보험</span><span class="pt-company">(주)인카금융</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">홈페이지 제작</span><span class="pt-company">(주) 브이디렉터스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">플라워샵 전국 꽃배달</span><span class="pt-company">루송플라워</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">상업용 인테리어</span><span class="pt-company">MMGG</span></div>
+        <p class="partner-intro-text">
+          BNI는 상호간의 신뢰를 바탕으로<br />
+          <strong>고객을 공유하고 서로의 업을 대신해서 소개해주는 시스템</strong>입니다.<br />
+          Givers Gain 철학으로 내가 먼저 멤버들의 비즈니스를 성공시키고자 하는데 집중합니다.
+        </p>
 
-        <div class="partner-tile" role="listitem"><span class="pt-category">채권추심</span><span class="pt-company">미래신용정보</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">공인중개사</span><span class="pt-company">미들공인중개사사무소</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">정부지원사업</span><span class="pt-company">(주)하니</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">세무사</span><span class="pt-company">홍택스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">변호사</span><span class="pt-company">법률사무소 다올</span></div>
+        <p class="partner-exclusive">
+          BNI는 대표님들의 비즈니스를 위해<br /><strong>한 분야의 대표님만 독점으로 가입 가능</strong>합니다.
+        </p>
 
-        <div class="partner-tile" role="listitem"><span class="pt-category">기업 통신 B2B</span><span class="pt-company">히웍스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">맞춤정장</span><span class="pt-company">파리스토</span></div>
-        <div class="partner-tile partner-tile-center" role="listitem" aria-label="비어있는 파트너 자리"><span class="pt-category">대표님의<br/>비즈니스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">건축자재 유통</span><span class="pt-company">(주)정도공영</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">SNS마케팅 (기업광고)</span><span class="pt-company">JCMO</span></div>
+        <div class="partner-text-rule"></div>
 
-        <div class="partner-tile" role="listitem"><span class="pt-category">종합청소</span><span class="pt-company">믿음 153종합환경</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">이미지 컨설팅</span><span class="pt-company">브이엠이미지컨설팅</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">간판</span><span class="pt-company">두손종합광고</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">감정평가</span><span class="pt-company">(주)다인감정평가</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">맞춤갈창</span><span class="pt-company">인솔리파</span></div>
+        <p class="partner-closing-sub">저희와 협업할 수 있는 대표님의 입장을 기다립니다.</p>
+        <p class="partner-tagline">혼자하면 <strong>꿈</strong>, 함께하면 <strong>기적</strong></p>
 
-        <div class="partner-tile" role="listitem"><span class="pt-category">방문요양</span><span class="pt-company">다조아방문요양센터</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">경영컨설팅</span><span class="pt-company">(주)코리아경영자문</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">효소건강식품</span><span class="pt-company">(주)좋은효소</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">정책자금</span><span class="pt-company">피에이파트너스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">화장품 제조, 유통</span><span class="pt-company">(주)에츠하임</span></div>
-
-        <div class="partner-tile" role="listitem"><span class="pt-category">물류, 운송</span><span class="pt-company">(주)로디로지스틱스</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">변리사</span><span class="pt-company">어센드 특허법률사무소</span></div>
-        <div class="partner-tile" role="listitem"><span class="pt-category">신차 렌트/리스</span><span class="pt-company">(주)케이에스오토플랜</span></div>
-        <div class="partner-tile partner-tile-empty" role="listitem" aria-label="모집 중">
-          <span class="pt-plus">+</span>
-        </div>
-        <div class="partner-tile partner-tile-empty" role="listitem" aria-label="모집 중">
-          <span class="pt-plus">+</span>
-        </div>
       </div>
-
-      <p class="partner-closing-sub">저희와 협업할 수 있는 대표님의 입장을 기다립니다.</p>
-      <p class="partner-exclusive">BNI는 대표님들의 비즈니스를 위해<br /><strong>한 분야의 대표님만 독점으로 가입 가능</strong>합니다.</p>
-      <p class="partner-tagline">혼자하면 <strong>꿈</strong>, 함께하면 <strong>기적</strong></p>
     </div>
   </section>
 

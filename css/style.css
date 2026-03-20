@@ -673,6 +673,8 @@ section {
   line-height: 1;
   pointer-events: none;
   user-select: none;
+  white-space: nowrap;
+  text-align: right;
 }
 
 .bni-block-title {
@@ -799,6 +801,73 @@ section {
 .btn-website:hover {
   background: var(--navy);
   color: #fff;
+}
+
+/* Members expand/collapse toggle */
+.members-grid.members-collapsed {
+  display: none;
+}
+
+.members-toggle-btn {
+  display: block;
+  margin: 0 auto 28px;
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--navy);
+  padding: 12px 32px;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+
+.members-toggle-btn:hover {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* Apply Success Modal */
+.apply-success-box {
+  text-align: center;
+  padding: 48px 32px 40px;
+  max-width: 380px;
+}
+
+.apply-success-icon {
+  width: 60px;
+  height: 60px;
+  background: #22c55e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  color: #fff;
+  margin: 0 auto 24px;
+  font-weight: 300;
+}
+
+.apply-success-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 12px;
+}
+
+.apply-success-desc {
+  font-size: 0.97rem;
+  color: #555;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+
+.apply-success-flow {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-bottom: 28px;
+  letter-spacing: 0.02em;
 }
 
 /* Business Card Modal */
@@ -1238,7 +1307,7 @@ section {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #aaa;
+  color: #444;
 }
 
 .countdown-date {
@@ -1271,6 +1340,7 @@ section {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
 }
+
 
 .cd-unit-label {
   font-size: 0.82rem;
@@ -1317,11 +1387,32 @@ section {
   text-align: center;
 }
 
+.partner-text-body {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.partner-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 20px;
+}
+
+.partner-text-rule {
+  width: 48px;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+  margin: 36px auto;
+}
+
 .partner-intro-text {
   font-size: 0.95rem;
   color: rgba(255,255,255,0.55);
   line-height: 1.85;
-  margin-bottom: 36px;
+  margin-bottom: 20px;
 }
 
 .partner-intro-text strong {
@@ -1330,10 +1421,11 @@ section {
 }
 
 .partner-headline {
-  font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 400;
   color: rgba(255,255,255,0.7);
-  margin-bottom: 40px;
+  line-height: 1.4;
+  margin-bottom: 0;
 }
 
 .partner-headline strong {
@@ -1439,7 +1531,9 @@ section {
 }
 
 @media (max-width: 768px) {
-  .apply-page-header { padding: 52px 0 56px; }
+  .apply-page-header { padding: 44px 0 48px; }
+  .apply-partner-section { padding: 48px 0 52px; }
+  .apply-layout { gap: 24px; }
   .partner-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
   .partner-tile { min-height: 68px; padding: 12px 6px; }
   .pt-category { font-size: 0.72rem; }
@@ -1849,5 +1943,31 @@ footer {
   .cal-day-num { font-size: 0.75rem; }
   .pain-card { padding: 20px 16px; }
   .meeting-card { padding: 20px 16px; }
+
+  /* Apply page */
+  .apply-page-header { padding: 36px 0 40px; }
+  .apply-page-eyebrow { letter-spacing: 0.1em; }
+  .apply-page-invite { letter-spacing: 0.1em; font-size: 1rem; }
+  .apply-info-box { padding: 24px 20px; }
+  .schedule-banner { height: 220px; }
+
+  /* Partner section */
+  .partner-eyebrow { letter-spacing: 0.1em; }
+  .apply-partner-section { padding: 44px 0 48px; }
+
+  /* BNI blocks */
+  .bni-block { padding: 32px 24px; }
+
+  /* Members toggle */
+  .members-toggle-btn { width: 100%; max-width: 280px; }
+}
+
+@media (max-width: 360px) {
+  .cd-num { font-size: 2rem; }
+  .cd-unit { min-width: 46px; }
+  .cd-sep { font-size: 1.6rem; }
+  .countdown-date { font-size: 0.9rem; }
+  .apply-page-eyebrow { font-size: 0.78rem; letter-spacing: 0.06em; }
+  .apply-page-invite { font-size: 0.92rem; letter-spacing: 0.06em; }
 }
 

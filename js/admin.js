@@ -300,7 +300,7 @@ async function renderAdminCalendar() {
       const type = entry ? entry.meeting_type : 'offline';
       const badge = document.createElement('span');
       badge.className = `cal-badge cal-badge-${type}`;
-      badge.textContent = type === 'offline' ? '송도 오크우드' : type === 'online' ? '온라인 화상회의' : '회의없음';
+      badge.textContent = type === 'offline' ? '조찬회의' : type === 'online' ? '화상회의' : '회의없음';
       cell.appendChild(badge);
       cell.title = '클릭하여 수정';
       cell.style.cursor = 'pointer';
