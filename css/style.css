@@ -639,7 +639,6 @@ section {
 }
 
 .bni-intro {
-  text-align: center;
   font-size: 1.05rem;
   color: var(--text-muted);
   max-width: 740px;
