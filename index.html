@@ -38,6 +38,69 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "BNI 히어로챕터",
+    "url": "https://bnihero.kr",
+    "logo": "https://bnihero.kr/img/logo.svg",
+    "description": "BNI 히어로챕터는 인천 송도에서 매주 금요일 오전 6:30에 모이는 비즈니스 네트워킹 그룹입니다. 리퍼럴 6,500건+, 비즈니스 총액 70억원+ 달성.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "아트센터대로 175",
+      "addressLocality": "연수구",
+      "addressRegion": "인천광역시",
+      "addressCountry": "KR"
+    },
+    "location": {
+      "@type": "Place",
+      "name": "오크우드 프리미엄 호텔 인천 송도",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "아트센터대로 175",
+        "addressLocality": "연수구",
+        "addressRegion": "인천광역시",
+        "addressCountry": "KR"
+      }
+    },
+    "event": {
+      "@type": "Event",
+      "name": "BNI 히어로챕터 주간 비즈니스 모임",
+      "description": "매주 금요일 오전 6:30~8:30, 오크우드 프리미엄 호텔 인천 송도에서 진행되는 비즈니스 네트워킹 모임",
+      "startDate": "2025-01-01",
+      "eventSchedule": {
+        "@type": "Schedule",
+        "repeatFrequency": "P1W",
+        "byDay": "https://schema.org/Friday",
+        "startTime": "06:30",
+        "endTime": "08:30"
+      },
+      "location": {
+        "@type": "Place",
+        "name": "오크우드 프리미엄 호텔 인천 송도",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "아트센터대로 175",
+          "addressLocality": "연수구",
+          "addressRegion": "인천광역시",
+          "addressCountry": "KR"
+        }
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": "BNI 히어로챕터",
+        "url": "https://bnihero.kr"
+      }
+    },
+    "sameAs": [
+      "https://www.instagram.com/bni_hero.ct/",
+      "http://bnikorea.com/ko/index"
+    ]
+  }
+  </script>
 </head>
 <body>
 
