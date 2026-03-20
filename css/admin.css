@@ -1,0 +1,741 @@
+/* ============================================================
+ * admin.css – BNI 히어로챕터 Admin Dashboard
+ * ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f0f2f7;
+  color: #222;
+  min-height: 100vh;
+}
+
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: inherit; }
+
+:root {
+  --navy: #2D2B6F;
+  --navy-light: #3e3a9e;
+  --navy-pale: rgba(45,43,111,0.08);
+  --gray-bg: #f0f2f7;
+  --white: #fff;
+  --border: #e2e4ef;
+  --radius: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
+
+/* ══════════════════════════════════════════════════════════════
+ * Login Screen
+ * ══════════════════════════════════════════════════════════════ */
+
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navy);
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 48px 40px;
+  width: 360px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.login-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.login-sub {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 32px;
+}
+
+#login-form .form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+#login-form label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+#login-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+#login-form input:focus {
+  border-color: var(--navy);
+  outline: none;
+}
+
+.btn-login {
+  width: 100%;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 13px;
+  border-radius: 8px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-login:hover { background: var(--navy-light); }
+
+#login-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 12px;
+  min-height: 20px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+ * Dashboard Screen
+ * ══════════════════════════════════════════════════════════════ */
+
+#dashboard-screen { display: none; }
+
+/* Top Bar */
+.admin-topbar {
+  background: var(--navy);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.admin-topbar-title {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  flex: 1;
+}
+
+.btn-logout {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-logout:hover { background: rgba(255,255,255,0.22); }
+
+/* Layout */
+.admin-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Tabs */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 6px;
+  box-shadow: var(--shadow);
+  flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.admin-tab-btn:hover { background: var(--navy-pale); color: var(--navy); }
+
+.admin-tab-btn.active {
+  background: var(--navy);
+  color: #fff;
+}
+
+/* Panel */
+.admin-tab-panel { display: none; }
+.admin-tab-panel.active { display: block; }
+
+/* Card */
+.admin-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+/* Tables */
+.admin-table-wrap {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-table thead th {
+  background: #f7f8fc;
+  font-weight: 700;
+  color: #555;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.admin-table tbody tr:last-child { border-bottom: none; }
+.admin-table tbody tr:hover { background: #f9f9fd; }
+
+.admin-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.admin-table td a {
+  color: var(--navy);
+  text-decoration: underline;
+  font-size: 0.83rem;
+}
+
+.order-td {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Buttons */
+.btn-add {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.btn-add:hover { background: var(--navy-light); }
+
+.btn-sm {
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  margin-right: 4px;
+}
+
+.btn-edit {
+  background: #eef0ff;
+  color: var(--navy);
+}
+
+.btn-edit:hover { background: var(--navy); color: #fff; }
+
+.btn-delete {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+.btn-delete:hover { background: #c0392b; color: #fff; }
+
+.btn-cancel {
+  background: #fff4e0;
+  color: #b07000;
+}
+.btn-cancel:hover { background: #e8a000; color: #fff; }
+
+/* 신청 상태 배지 */
+.app-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.app-badge-pending   { background: #fff4e0; color: #b07000; }
+.app-badge-confirmed { background: #e8f8ee; color: #1a7a3c; }
+
+.app-badge-toggle {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.app-badge-toggle:hover { opacity: 0.75; }
+
+/* 비고 입력란 */
+.app-note-input {
+  width: 100%;
+  min-width: 140px;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  color: #333;
+  background: #fafafa;
+  transition: border-color 0.15s, background 0.15s;
+}
+.app-note-input:focus {
+  border-color: var(--navy);
+  background: #fff;
+  outline: none;
+}
+
+/* ... 더보기 버튼 */
+.app-more-cell { width: 36px; padding: 8px 4px !important; }
+
+.app-more-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.app-more-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #bbb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  transition: background 0.15s, color 0.15s;
+}
+.app-more-btn:hover { background: #f0f0f0; color: #555; }
+
+.app-more-menu {
+  display: none;
+  position: fixed;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 200;
+  min-width: 100px;
+  overflow: hidden;
+}
+.app-more-menu.open { display: block; }
+
+.app-more-menu-item {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.84rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.app-more-delete { color: #c0392b; }
+.app-more-delete:hover { background: #fdecea; }
+
+/* 페이지네이션 */
+.apps-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 0 4px;
+  font-size: 0.88rem;
+  color: #666;
+}
+
+.btn-page {
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--navy);
+  transition: background 0.15s;
+}
+.btn-page:hover:not(:disabled) { background: var(--navy); color: #fff; }
+.btn-page:disabled { opacity: 0.4; cursor: default; }
+
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  font-size: 0.75rem;
+  color: #555;
+  transition: background 0.15s;
+}
+
+.icon-btn:hover:not([disabled]) { background: var(--navy-pale); }
+.icon-btn[disabled] { opacity: 0.3; cursor: not-allowed; }
+
+/* ── Admin Calendar ─────────────────────────────────────────── */
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.cal-nav button {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.cal-nav button:hover { background: var(--navy-light); }
+
+#admin-cal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy);
+  min-width: 120px;
+  text-align: center;
+}
+
+.admin-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.admin-cal-header {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #999;
+  padding: 6px 4px;
+}
+
+.admin-cal-cell {
+  min-height: 80px;
+  border-radius: 7px;
+  background: #f5f6fa;
+  padding: 7px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-cal-cell.blank { background: transparent; }
+
+.admin-friday {
+  background: #eef0ff;
+  border: 1.5px solid #c7c9ee;
+}
+
+.admin-friday:hover {
+  background: #dde0ff;
+  border-color: var(--navy);
+}
+
+.admin-day-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #444;
+  align-self: flex-start;
+}
+
+.cal-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.cal-badge-offline    { background: var(--navy); color: #fff; }
+.cal-badge-online     { background: #27ae60; color: #fff; }
+.cal-badge-cancelled  { background: #999; color: #fff; }
+
+/* ── Modals ─────────────────────────────────────────────────── */
+
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+
+.admin-modal.active { display: flex; }
+
+.admin-modal-box {
+  background: var(--white);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  padding: 28px 28px 24px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: modal-in 0.2s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.admin-modal-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 20px;
+}
+
+.admin-modal-close {
+  position: absolute;
+  top: 14px; right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #888;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.admin-modal-close:hover { background: #f0f0f0; }
+
+/* Form inside modal */
+.modal-form-group {
+  margin-bottom: 16px;
+}
+
+.modal-form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.modal-form-group input,
+.modal-form-group select,
+.modal-form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text, #222);
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.modal-form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-form-group input:focus,
+.modal-form-group select:focus,
+.modal-form-group textarea:focus {
+  border-color: var(--navy);
+  outline: none;
+}
+
+.modal-card-preview {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+.btn-modal-submit {
+  width: 100%;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-modal-submit:hover { background: var(--navy-light); }
+.btn-modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Settings Form ──────────────────────────────────────────── */
+
+.settings-section-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 24px 0 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section-title:first-child { margin-top: 0; }
+
+.settings-group {
+  margin-bottom: 14px;
+}
+
+.settings-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.settings-group input {
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.settings-group input:focus {
+  border-color: var(--navy);
+  outline: none;
+}
+
+.btn-settings-save {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 12px 40px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 24px;
+  transition: background 0.2s;
+}
+
+.btn-settings-save:hover { background: var(--navy-light); }
+.btn-settings-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Admin messages */
+.admin-msg {
+  padding: 12px 16px;
+  border-radius: 7px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-top: 16px;
+  display: inline-block;
+}
+
+.admin-msg-success {
+  background: #eafaf0;
+  color: #1a7a40;
+  border: 1px solid #b7e8c8;
+}
+
+.admin-msg-error {
+  background: #fdf0ef;
+  color: #c0392b;
+  border: 1px solid #f5c6c2;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .admin-layout { padding: 16px; }
+
+  .admin-tabs {
+    gap: 2px;
+    padding: 4px;
+  }
+
+  .admin-tab-btn {
+    font-size: 0.78rem;
+    padding: 8px 10px;
+    min-width: auto;
+  }
+
+  .admin-card { padding: 16px 12px; }
+
+  .admin-modal-box { padding: 20px 16px; }
+
+  .admin-cal-cell { min-height: 60px; }
+  .cal-badge { font-size: 0.55rem; }
+}

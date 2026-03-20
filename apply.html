@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>참관 신청 — BNI 히어로챕터</title>
+  <meta name="description" content="BNI 히어로챕터 참관 신청 페이지. 매주 금요일 오전 6:30, 송도 오크우드 호텔에서 직접 모임을 경험해보세요." />
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="https://bnihero.kr/apply" />
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+  Navigation
+════════════════════════════════════════════════════════════ -->
+<nav id="main-nav" role="navigation" aria-label="주 메뉴">
+  <div class="nav-inner">
+    <a href="index.html#hero" class="nav-logo"><img src="img/logo.svg" alt="BNI 히어로챕터" class="nav-logo-img" /></a>
+    <button id="hamburger" aria-expanded="false" aria-controls="nav-menu" aria-label="메뉴 열기">
+      <span></span><span></span><span></span>
+    </button>
+    <ul id="nav-menu" role="list">
+      <li><a href="index.html#about">히어로챕터</a></li>
+      <li><a href="index.html#schedule">모임일정</a></li>
+      <li><a href="index.html#meeting">회의구성</a></li>
+      <li><a href="index.html#bni">BNI</a></li>
+      <li><a href="index.html#members">멤버</a></li>
+      <li><a href="index.html#instagram">히어로소식</a></li>
+      <li><a href="apply.html" class="nav-cta">신청/문의</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+  Privacy Modal
+════════════════════════════════════════════════════════════ -->
+<div id="privacy-modal" class="modal-overlay" role="alertdialog" aria-modal="true" aria-labelledby="privacy-modal-title">
+  <div class="modal-box privacy-modal-box">
+    <div class="privacy-modal-icon" aria-hidden="true">⚠️</div>
+    <p class="privacy-modal-title" id="privacy-modal-title">개인정보 동의 필요</p>
+    <p class="privacy-modal-msg">개인정보 수집 및 이용에 동의하셔야<br />참관 신청이 가능합니다.</p>
+    <button class="btn-primary privacy-modal-btn">확인</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Page Header
+════════════════════════════════════════════════════════════ -->
+<main style="padding-top: 72px;">
+  <div class="apply-page-header">
+    <div class="container apply-page-header-inner">
+      <p class="apply-page-eyebrow">BNI Hero Chapter</p>
+      <div class="apply-page-rule"></div>
+      <h1 class="apply-page-title">
+        함께 성장하는<br /><strong>비즈니스 모임</strong>
+      </h1>
+      <p class="apply-page-invite">초대합니다</p>
+      <div class="apply-page-rule apply-page-rule-accent"></div>
+      <div class="apply-page-meta">
+        <span class="apply-page-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          매주 금요일 오전 6:30
+        </span>
+        <span class="apply-page-meta-div" aria-hidden="true"></span>
+        <span class="apply-page-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          오크우드 프리미엄 호텔 인천 송도
+        </span>
+      </div>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Countdown
+════════════════════════════════════════════════════════════ -->
+  <div id="meeting-countdown" class="apply-countdown">
+    <div class="countdown-inner">
+      <div class="countdown-label-wrap">
+        <span class="countdown-label">다음 오프라인 회의까지</span>
+        <span class="countdown-date" id="cd-date"></span>
+      </div>
+      <div class="countdown-display">
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-days">--</span>
+          <span class="cd-unit-label">일</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-hours">--</span>
+          <span class="cd-unit-label">시간</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-mins">--</span>
+          <span class="cd-unit-label">분</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-secs">--</span>
+          <span class="cd-unit-label">초</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Form Section
+════════════════════════════════════════════════════════════ -->
+  <section id="apply-page" aria-labelledby="apply-form-heading" style="background: var(--gray-bg, #f8f8fa);">
+    <div class="container">
+      <div class="apply-layout">
+
+        <!-- Left: Form -->
+        <div class="apply-form-side">
+          <h2 class="apply-form-heading" id="apply-form-heading">참관 신청서</h2>
+          <form id="apply-form" novalidate>
+
+            <div class="form-group">
+              <label for="company_name">회사명 <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="company_name" name="company_name" placeholder="회사명" required />
+            </div>
+
+            <div class="form-group">
+              <label for="name">이름 <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="name" name="name" placeholder="성함" required />
+            </div>
+
+            <div class="form-group">
+              <label for="position">직책</label>
+              <input type="text" id="position" name="position" placeholder="예) 대표이사" />
+            </div>
+
+            <div class="form-group">
+              <label for="phone">연락처 <span class="req" aria-hidden="true">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="010-0000-0000" required />
+            </div>
+
+            <div class="form-group">
+              <label for="business_field">업종 <span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="business_field" name="business_field" placeholder="예) 건설, IT, 세무, 마케팅 등" required />
+            </div>
+
+            <div class="form-group">
+              <label for="referrer">소개자/방문경로</label>
+              <input type="text" id="referrer" name="referrer" placeholder="예) 홍길동 대표님 소개, 인스타그램 등" />
+            </div>
+
+            <div class="form-group">
+              <label for="visit-date">참관 예정일 <span class="req" aria-hidden="true">*</span></label>
+              <input type="date" id="visit-date" name="visit_date" required />
+              <p style="font-size:0.8rem;color:#888;margin-top:5px;">매주 금요일만 선택 가능합니다.</p>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="privacy-agree" name="privacy_agree" />
+              <label for="privacy-agree">
+                개인정보 수집 및 이용에 동의합니다.
+                <span style="display:block;font-size:0.8rem;margin-top:3px;color:#aaa;">
+                  수집 항목: 회사명, 이름, 직책, 연락처, 업종, 참관예정일 / 목적: 참관 신청 및 안내 / 보유기간: 처리 완료 후 1년
+                </span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-submit">신청하기</button>
+          </form>
+        </div>
+
+        <!-- Right: Info Box -->
+        <div class="apply-info-side">
+          <div class="apply-info-box">
+            <h3>모임 안내</h3>
+
+            <div class="info-row">
+              <span class="info-row-icon" aria-hidden="true">🗓️</span>
+              <div class="info-row-content">
+                <p class="info-row-label">일시</p>
+                <p class="info-row-value">매주 금요일 오전 6:30 ~ 8:30</p>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-row-icon" aria-hidden="true">🏨</span>
+              <div class="info-row-content">
+                <p class="info-row-label">장소</p>
+                <p class="info-row-value">오크우드 프리미엄 호텔 인천 송도<br /><span style="font-size:0.85rem;color:#888;">37F 아스테리아룸</span></p>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-row-icon" aria-hidden="true">💼</span>
+              <div class="info-row-content">
+                <p class="info-row-label">준비사항</p>
+                <p class="info-row-value">명함 50장, 비즈니스 정장</p>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <span class="info-row-icon" aria-hidden="true">💳</span>
+              <div class="info-row-content">
+                <p class="info-row-label">참가비</p>
+                <p class="info-row-value">50,000원 <span style="font-size:0.85rem;color:#888;">(조찬 포함)</span></p>
+              </div>
+            </div>
+
+            <div class="info-notice">
+              <strong>참관 절차 안내</strong><br />
+              신청 → 담당자 확인 연락 → 참가비 입금 → 참관 확정<br />
+              <span style="font-size:0.82rem;display:block;margin-top:6px;">
+                카카오뱅크 <strong>7942-22-19926</strong> (이흥재)<br />
+                참관비 50,000원은 확정 안내 후 입금해주세요.
+              </span>
+            </div>
+
+            <!-- Map Card -->
+            <div class="map-card">
+              <div class="map-card-inner">
+                <div>
+                  <p class="map-card-place">오크우드 프리미어 인천</p>
+                  <p class="map-card-addr">인천광역시 연수구 아트센터대로 175</p>
+                </div>
+              </div>
+              <div class="map-btn-group">
+                <a href="https://map.naver.com/v5/search/%EC%98%A4%ED%81%AC%EC%9A%B0%EB%93%9C+%ED%94%84%EB%A6%AC%EB%AF%B8%EC%96%B4+%EC%9D%B8%EC%B2%9C"
+                   target="_blank" rel="noopener noreferrer" class="map-btn map-btn-naver">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z"/></svg>
+                  네이버지도
+                </a>
+                <a href="https://map.kakao.com/link/search/오크우드+프리미어+인천"
+                   target="_blank" rel="noopener noreferrer" class="map-btn map-btn-kakao">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.61 1.52 4.9 3.84 6.31L4.5 21l4.63-2.44C10.2 18.84 11.09 19 12 19c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/></svg>
+                  카카오맵
+                </a>
+              </div>
+            </div>
+
+            <p class="apply-contact-label">기타 문의</p>
+            <div class="apply-contact">
+              <a href="tel:010-4848-5527" class="apply-contact-item">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.2z"/></svg>
+                010-4848-5527
+              </a>
+              <a href="mailto:jud150@naver.com" class="apply-contact-item">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                jud150@naver.com
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+<!-- ══════════════════════════════════════════════════════════
+  BNI Partner Section
+════════════════════════════════════════════════════════════ -->
+  <section class="apply-partner-section" aria-labelledby="partner-heading">
+    <div class="container">
+
+      <p class="partner-intro-text">
+        BNI는 상호간의 신뢰를 바탕으로<br />
+        <strong>고객을 공유하고 서로의 업을 대신해서 소개해주는 시스템</strong>입니다.<br />
+        Givers Gain 철학으로 내가 먼저 멤버들의 비즈니스를 성공시키고자 하는데 집중합니다.
+      </p>
+
+      <h2 class="partner-headline" id="partner-heading">
+        "대표님의 <strong>비즈니스 파트너</strong>를 찾아보세요"
+      </h2>
+
+      <div class="partner-grid" role="list">
+        <div class="partner-tile" role="listitem"><span class="pt-category">요식업 (한우)</span><span class="pt-company">유달구의 한우폭탄</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">노무사</span><span class="pt-company">노무법인 엠제이</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">보험설계사 인보험</span><span class="pt-company">바른보험 바른보상</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">생활가전 렌탈</span><span class="pt-company">호웨이</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">카드단말기 포스</span><span class="pt-company">(주)벙글다</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">보안, 방범CCTV</span><span class="pt-company">KT텔레캅</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">보험설계사 물보험</span><span class="pt-company">(주)인카금융</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">홈페이지 제작</span><span class="pt-company">(주) 브이디렉터스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">플라워샵 전국 꽃배달</span><span class="pt-company">루송플라워</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">상업용 인테리어</span><span class="pt-company">MMGG</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">채권추심</span><span class="pt-company">미래신용정보</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">공인중개사</span><span class="pt-company">미들공인중개사사무소</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">정부지원사업</span><span class="pt-company">(주)하니</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">세무사</span><span class="pt-company">홍택스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">변호사</span><span class="pt-company">법률사무소 다올</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">기업 통신 B2B</span><span class="pt-company">히웍스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">맞춤정장</span><span class="pt-company">파리스토</span></div>
+        <div class="partner-tile partner-tile-center" role="listitem" aria-label="비어있는 파트너 자리"><span class="pt-category">대표님의<br/>비즈니스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">건축자재 유통</span><span class="pt-company">(주)정도공영</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">SNS마케팅 (기업광고)</span><span class="pt-company">JCMO</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">종합청소</span><span class="pt-company">믿음 153종합환경</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">이미지 컨설팅</span><span class="pt-company">브이엠이미지컨설팅</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">간판</span><span class="pt-company">두손종합광고</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">감정평가</span><span class="pt-company">(주)다인감정평가</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">맞춤갈창</span><span class="pt-company">인솔리파</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">방문요양</span><span class="pt-company">다조아방문요양센터</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">경영컨설팅</span><span class="pt-company">(주)코리아경영자문</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">효소건강식품</span><span class="pt-company">(주)좋은효소</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">정책자금</span><span class="pt-company">피에이파트너스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">화장품 제조, 유통</span><span class="pt-company">(주)에츠하임</span></div>
+
+        <div class="partner-tile" role="listitem"><span class="pt-category">물류, 운송</span><span class="pt-company">(주)로디로지스틱스</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">변리사</span><span class="pt-company">어센드 특허법률사무소</span></div>
+        <div class="partner-tile" role="listitem"><span class="pt-category">신차 렌트/리스</span><span class="pt-company">(주)케이에스오토플랜</span></div>
+        <div class="partner-tile partner-tile-empty" role="listitem" aria-label="모집 중">
+          <span class="pt-plus">+</span>
+        </div>
+        <div class="partner-tile partner-tile-empty" role="listitem" aria-label="모집 중">
+          <span class="pt-plus">+</span>
+        </div>
+      </div>
+
+      <p class="partner-closing-sub">저희와 협업할 수 있는 대표님의 입장을 기다립니다.</p>
+      <p class="partner-exclusive">BNI는 대표님들의 비즈니스를 위해<br /><strong>한 분야의 대표님만 독점으로 가입 가능</strong>합니다.</p>
+      <p class="partner-tagline">혼자하면 <strong>꿈</strong>, 함께하면 <strong>기적</strong></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+  Footer
+════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">BNI 히어로챕터</span>
+    <span class="footer-copy">&copy; <span id="footer-year"></span> BNI 히어로챕터. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

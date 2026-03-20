@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BNI 히어로챕터 — 인천 비즈니스 네트워킹</title>
+  <meta name="description" content="BNI 히어로챕터는 인천 최고의 비즈니스 네트워킹 그룹입니다. 매주 금요일 오전 6:30, 오크우드 호텔 인천에서 만납니다. 리퍼럴 6,500건+, 비즈니스 총액 70억원+ 달성." />
+  <meta name="keywords" content="BNI, 히어로챕터, 인천, 비즈니스 네트워킹, 리퍼럴, 사업 소개" />
+  <meta name="author" content="BNI 히어로챕터" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bnihero.kr/" />
+  <meta property="og:title" content="BNI 히어로챕터 — 인천 비즈니스 네트워킹" />
+  <meta property="og:description" content="BNI 히어로챕터는 인천 최고의 비즈니스 네트워킹 그룹입니다. 매주 금요일 오전 6:30." />
+  <meta property="og:image" content="https://bnihero.kr/img/og-image.jpg" />
+  <meta property="og:locale" content="ko_KR" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BNI 히어로챕터" />
+  <meta name="twitter:description" content="인천 비즈니스 네트워킹 — BNI 히어로챕터" />
+
+  <!-- Site Verification (fill in real tokens) -->
+  <meta name="naver-site-verification" content="0ee416db4f6e4569845af55f8d5683d4e4079aec" />
+  <meta name="google-site-verification" content="maOsaIsJ0rItumLNyoEr3GZBszde9PcrXHsS_8eR_Bo" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://bnihero.kr/" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+
+  <!-- Pretendard Font -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+  Navigation
+════════════════════════════════════════════════════════════ -->
+<nav id="main-nav" role="navigation" aria-label="주 메뉴">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo"><img src="img/logo.svg" alt="BNI 히어로챕터" class="nav-logo-img" /></a>
+
+    <button id="hamburger" aria-expanded="false" aria-controls="nav-menu" aria-label="메뉴 열기">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <ul id="nav-menu" role="list">
+      <li><a href="#about">히어로챕터</a></li>
+      <li><a href="#schedule">모임일정</a></li>
+      <li><a href="#meeting">회의구성</a></li>
+      <li><a href="#bni">BNI</a></li>
+      <li><a href="#members">멤버</a></li>
+      <li><a href="#instagram">히어로소식</a></li>
+      <li><a href="apply.html" class="nav-cta">신청/문의</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+  Floating Buttons
+════════════════════════════════════════════════════════════ -->
+<div class="fab-wrap">
+  <a href="tel:010-4848-5527" class="fab-ig" aria-label="전화 문의">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.2z"/>
+    </svg>
+  </a>
+  <a href="https://www.instagram.com/bni_hero.ct/"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="fab-ig"
+     aria-label="인스타그램 방문">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 1: Hero Video
+════════════════════════════════════════════════════════════ -->
+<section id="hero" aria-label="히어로 영상">
+  <div class="video-wrapper">
+    <iframe
+      src="https://player.vimeo.com/video/1087870619?autoplay=1&loop=1&muted=1&background=1&quality=1080p"
+      allow="autoplay; fullscreen; picture-in-picture"
+      allowfullscreen
+      title="BNI 히어로챕터 소개 영상">
+    </iframe>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 2: 히어로챕터 소개
+════════════════════════════════════════════════════════════ -->
+<section id="about" aria-labelledby="about-heading">
+  <div class="container">
+
+    <!-- 2-1: Pain Points -->
+    <h2 class="about-headline" id="about-heading">BNI 히어로 챕터, 무엇이 특별할까요?</h2>
+    <p class="about-sub">당신이 사업가라면, 이런 고민 해본 적 있을 거예요.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-icon" aria-hidden="true">🔍</span>
+        <p class="pain-text">새로운 고객을 어디서 만나야 할까?</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon" aria-hidden="true">👥</span>
+        <p class="pain-text">시너지가 나는 파트너사들은 어디에 있을까?</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon" aria-hidden="true">📈</span>
+        <p class="pain-text">매출을 확 끌어올릴 방법은 없을까?</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon" aria-hidden="true">🤝</span>
+        <p class="pain-text">내 사업을 진심으로 이해하고 도와줄 사람은 없을까?</p>
+      </div>
+    </div>
+
+    <!-- 2-2: Stats -->
+    <div class="stats-section" aria-label="챕터 성과 통계">
+      <div class="stat-item">
+        <span class="stat-number" id="stat-referral">0</span>
+        <p class="stat-label">리퍼럴</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-visitor">0</span>
+        <p class="stat-label">비지터</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-business">0</span>
+        <p class="stat-label">비즈니스 총액</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 3: 모임일정
+════════════════════════════════════════════════════════════ -->
+<section id="schedule" aria-labelledby="schedule-heading">
+  <div class="container">
+    <h2 class="section-title" id="schedule-heading">모임일정</h2>
+    <div class="schedule-banner">
+      <img src="img/oakwood.jpg" alt="송도 오크우드 호텔" class="schedule-banner-img" />
+      <div class="schedule-banner-overlay">
+        <div class="schedule-banner-info">
+          <div class="schedule-banner-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div>
+              <p class="banner-label">모임 시간</p>
+              <p class="banner-value">매주 금요일  오전 6:30 ~ 8:30</p>
+            </div>
+          </div>
+          <div class="schedule-banner-divider"></div>
+          <div class="schedule-banner-row">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+            <div>
+              <p class="banner-label">장소</p>
+              <p class="banner-value">송도 오크우드 호텔</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cal-nav" role="group" aria-label="월 이동">
+      <button id="cal-prev" aria-label="이전 달">&#8592;</button>
+      <span id="cal-title" aria-live="polite"></span>
+      <button id="cal-next" aria-label="다음 달">&#8594;</button>
+    </div>
+
+    <div id="cal-grid" class="cal-grid" role="grid" aria-label="월별 일정"></div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 4: 회의구성
+════════════════════════════════════════════════════════════ -->
+<section id="meeting" aria-labelledby="meeting-heading">
+  <div class="container">
+    <h2 class="section-title" id="meeting-heading">BNI 히어로챕터 주간 회의 구성</h2>
+
+    <div class="meeting-grid">
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">🤝</span>
+        <div class="meeting-content">
+          <p class="meeting-name">오픈 네트워킹</p>
+          <p class="meeting-desc">가벼운 인사와 명함 교환</p>
+        </div>
+      </div>
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">📚</span>
+        <div class="meeting-content">
+          <p class="meeting-name">비즈니스 교육</p>
+          <p class="meeting-desc">성공을 위한 지식 채우기</p>
+        </div>
+      </div>
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">⏱</span>
+        <div class="meeting-content">
+          <p class="meeting-name">위클리 프레젠테이션</p>
+          <p class="meeting-desc">나의 사업 알리는 30초의 마법</p>
+        </div>
+      </div>
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">🎯</span>
+        <div class="meeting-content">
+          <p class="meeting-name">피쳐 프레젠테이션</p>
+          <p class="meeting-desc">내 사업의 모든 것 (주 1~2명)</p>
+        </div>
+      </div>
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">📨</span>
+        <div class="meeting-content">
+          <p class="meeting-name">리퍼럴 공유</p>
+          <p class="meeting-desc">실질적인 비즈니스 기회 창출</p>
+        </div>
+      </div>
+      <div class="meeting-card">
+        <span class="meeting-icon" aria-hidden="true">🍽️</span>
+        <div class="meeting-content">
+          <p class="meeting-name">조찬회식</p>
+          <p class="meeting-desc">회의 이후 오크우드 조식뷔페, 인사이트 공유</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 5: BNI코리아 소개
+════════════════════════════════════════════════════════════ -->
+<section id="bni" aria-labelledby="bni-heading">
+  <div class="container">
+    <!-- BNI KOREA 로고가 섹션 헤딩 역할 -->
+    <h2 id="bni-heading" class="bni-logo-wrap">
+      <img src="img/bni-korea-logo.svg" alt="BNI KOREA" class="bni-logo-img" />
+    </h2>
+
+    <p class="bni-intro">
+      BNI는 1985년 미국 캘리포니아에서 설립된 <strong>세계 최대 비즈니스 네트워킹 조직</strong>입니다.<br />
+      현재 전 세계 76개국, 11,600개 이상의 챕터에서 35만 명 이상의 회원이 활동하고 있습니다.
+    </p>
+
+    <div class="bni-blocks">
+      <div class="bni-block">
+        <span class="bni-block-watermark" aria-hidden="true">Goal</span>
+        <h3 class="bni-block-title">목표</h3>
+        <p class="bni-block-text">
+          BNI Korea의 목표는 신뢰 기반의 사업 소개와 협업을 통해
+          회원사의 비즈니스 성장과 실질적인 수익 창출을 돕는 것입니다.
+        </p>
+      </div>
+      <div class="bni-block">
+        <span class="bni-block-watermark" aria-hidden="true">Givers Gain</span>
+        <h3 class="bni-block-title">기버스 게인®</h3>
+        <p class="bni-block-text">
+          "먼저 주는 사람이 얻는다" — 신뢰하는 멤버 간의 적극적인 소개와 협력이
+          실질적인 비즈니스 성과로 이어지는 BNI만의 핵심 철학입니다.
+        </p>
+      </div>
+      <div class="bni-block">
+        <span class="bni-block-watermark" aria-hidden="true">Global</span>
+        <h3 class="bni-block-title">글로벌 네트워크</h3>
+        <p class="bni-block-text">
+          76개국 · 11,600+ 챕터 · 35만+ 회원.<br />
+          BNI는 전 세계 어디서나 통하는 신뢰의 비즈니스 플랫폼입니다.
+        </p>
+      </div>
+      <div class="bni-block">
+        <span class="bni-block-watermark" aria-hidden="true">Result</span>
+        <h3 class="bni-block-title">검증된 성과</h3>
+        <p class="bni-block-text">
+          연간 회원 간 리퍼럴 1,780만 건, 창출된 비즈니스 규모 약 37조 원(26.5B USD).<br />
+          숫자가 증명하는 BNI의 실질적인 힘입니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="bni-btn-wrap">
+      <a href="http://bnikorea.com/ko/index" target="_blank" rel="noopener noreferrer" class="btn-primary">
+        BNI코리아 홈페이지 방문하기 →
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 6: 멤버
+════════════════════════════════════════════════════════════ -->
+<section id="members" aria-labelledby="members-heading">
+  <div class="container">
+    <h2 class="section-title" id="members-heading">히어로챕터 멤버</h2>
+    <div id="members-grid" class="members-grid" aria-label="멤버 목록">
+      <!-- Loaded by JS from Supabase -->
+      <p style="text-align:center;color:#888;grid-column:1/-1;padding:40px 0;">멤버 정보를 불러오는 중입니다…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Business Card Modal
+════════════════════════════════════════════════════════════ -->
+<div id="card-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-card-title">
+  <div class="modal-box">
+    <button id="modal-close" class="modal-close" aria-label="닫기">&times;</button>
+    <p class="modal-title" id="modal-card-title"></p>
+    <img id="modal-card-img" class="modal-card-img" src="" alt="" />
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 7: 인스타그램
+════════════════════════════════════════════════════════════ -->
+<section id="instagram" aria-labelledby="instagram-heading">
+  <div class="container">
+    <h2 class="section-title" id="instagram-heading">
+      히어로 소식 <span class="section-title-sub">with Instagram</span>
+    </h2>
+
+    <div class="instagram-layout">
+
+      <!-- Left: 채널 소개 -->
+      <div class="instagram-info">
+        <div class="insta-profile">
+          <div class="insta-avatar" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="48" height="48" rx="24" fill="url(#ig-grad)"/>
+              <defs>
+                <linearGradient id="ig-grad" x1="0" y1="48" x2="48" y2="0">
+                  <stop offset="0%" stop-color="#fcb045"/>
+                  <stop offset="50%" stop-color="#fd1d1d"/>
+                  <stop offset="100%" stop-color="#833ab4"/>
+                </linearGradient>
+              </defs>
+              <path d="M24 14c-2.76 0-3.11.012-4.19.061-3.19.146-4.95 1.91-5.1 5.1C14.61 20.22 14.6 20.57 14.6 24s.011 3.78.06 4.84c.146 3.185 1.905 4.953 5.1 5.099C20.89 33.988 21.24 34 24 34s3.11-.012 4.19-.061c3.19-.146 4.955-1.91 5.1-5.1.049-1.06.06-1.41.06-4.84s-.011-3.78-.06-4.84c-.146-3.185-1.905-4.953-5.1-5.099C27.11 14.012 26.76 14 24 14zm0 1.802c2.714 0 3.035.01 4.104.059 2.7.123 3.97 1.41 4.093 4.093.049 1.07.059 1.39.059 4.046s-.01 2.976-.059 4.045c-.124 2.68-1.39 3.97-4.093 4.093-1.07.049-1.389.059-4.104.059s-3.035-.01-4.104-.059c-2.706-.124-3.97-1.416-4.093-4.093C15.754 26.977 15.744 26.657 15.744 24s.01-2.977.059-4.046c.124-2.68 1.39-3.97 4.093-4.093C20.965 15.812 21.286 15.802 24 15.802zM24 19a5 5 0 100 10A5 5 0 0024 19zm0 1.802a3.198 3.198 0 110 6.396 3.198 3.198 0 010-6.396zM29.2 17.8a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" fill="#fff"/>
+            </svg>
+          </div>
+          <div class="insta-handle-wrap">
+            <p class="insta-handle">@bni_hero.ct</p>
+            <p class="insta-platform">Instagram</p>
+          </div>
+        </div>
+
+        <p class="insta-desc">
+          BNI 히어로챕터의 생생한 모임 현장,<br />
+          멤버 소식과 비즈니스 이야기를<br />
+          인스타그램에서 만나보세요.
+        </p>
+
+        <a href="https://www.instagram.com/bni_hero.ct/"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="insta-follow-btn">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="16" height="16" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          팔로우하기
+        </a>
+      </div>
+
+      <!-- Right: 피드 -->
+      <div class="instagram-feed-wrap">
+        <behold-widget feed-id="0MSumI2bLXpHYggcoMsD"></behold-widget>
+        <script>
+          (() => {
+            const d=document,s=d.createElement("script");s.type="module";
+            s.src="https://w.behold.so/widget.js";d.head.append(s);
+          })();
+        </script>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+  Section 8: 참관신청 CTA
+════════════════════════════════════════════════════════════ -->
+<section id="apply" aria-labelledby="apply-heading">
+  <div class="container">
+    <h2 class="section-title" id="apply-heading">참관 신청</h2>
+    <div class="apply-cta-box">
+      <div class="apply-cta-text">
+        <p class="apply-cta-title">BNI 히어로챕터에 관심이 있으신가요?</p>
+        <p class="apply-cta-desc">매주 금요일 오전 6:30, 오크우드 호텔에서 진행되는<br />사업가들의 비즈니스 모임에 직접 참관해보세요.<br />신청은 1분이면 충분합니다.</p>
+        <a href="apply.html" class="btn-primary apply-cta-btn">참관 신청하기 →</a>
+      </div>
+      <div class="apply-cta-contact">
+        <p class="apply-contact-label">기타 문의</p>
+        <div class="apply-contact">
+          <a href="tel:010-4848-5527" class="apply-contact-item">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.2z"/></svg>
+            010-4848-5527
+          </a>
+          <a href="mailto:jud150@naver.com" class="apply-contact-item">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            jud150@naver.com
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════
+  Footer
+════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">BNI 히어로챕터</span>
+    <span class="footer-copy">&copy; <span id="footer-year"></span> BNI 히어로챕터. All rights reserved.</span>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════
+  Scripts
+════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Footer year
+  document.getElementById('footer-year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
