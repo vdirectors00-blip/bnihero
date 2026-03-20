@@ -598,9 +598,21 @@ section {
 }
 
 .meeting-icon {
-  font-size: 2.2rem;
-  line-height: 1;
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
+  background: var(--navy-pale);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--navy);
+}
+
+.meeting-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--navy);
 }
 
 .meeting-content {}
@@ -1881,12 +1893,15 @@ footer {
 
   /* Stats */
   .stats-section {
-    flex-direction: column;
-    gap: 28px;
-    padding: 36px 24px;
+    flex-direction: row;
+    gap: 0;
+    padding: 28px 8px;
   }
 
-  .stat-item + .stat-item::before { display: none; }
+  .stat-item { padding: 0 8px; }
+  .stat-item + .stat-item::before { display: block; }
+  .stat-number { font-size: clamp(1.5rem, 6vw, 2.2rem); }
+  .stat-label { font-size: 0.78rem; }
 
   /* Meeting */
   .meeting-grid {
