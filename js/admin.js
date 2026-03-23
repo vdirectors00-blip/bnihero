@@ -79,6 +79,18 @@ async function loadMembersTab() {
   renderMembersTable();
 
   document.getElementById('member-add-btn')?.addEventListener('click', () => openMemberModal(null));
+
+  document.getElementById('members-tbody')?.addEventListener('click', (e) => {
+    const upBtn   = e.target.closest('.btn-move-up');
+    const downBtn = e.target.closest('.btn-move-down');
+    const editBtn = e.target.closest('.btn-edit');
+    const delBtn  = e.target.closest('.btn-delete');
+
+    if (upBtn)   moveMember(parseInt(upBtn.dataset.idx, 10), -1);
+    if (downBtn) moveMember(parseInt(downBtn.dataset.idx, 10), 1);
+    if (editBtn) openMemberModal(editBtn.dataset.id);
+    if (delBtn)  confirmDeleteMember(delBtn.dataset.id);
+  });
 }
 
 function renderMembersTable() {
@@ -94,13 +106,13 @@ function renderMembersTable() {
       <td>${m.card_image_url ? `<a href="${escHtml(m.card_image_url)}" target="_blank">보기</a>` : '-'}</td>
       <td>${m.website_url ? `<a href="${escHtml(m.website_url)}" target="_blank">링크</a>` : '-'}</td>
       <td class="order-td">
-        <button class="icon-btn" onclick="moveMember(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="위로">▲</button>
+        <button class="icon-btn btn-move-up" data-idx="${idx}" ${idx === 0 ? 'disabled' : ''} title="위로">▲</button>
         <span>${m.sort_order}</span>
-        <button class="icon-btn" onclick="moveMember(${idx}, 1)" ${idx === membersCache.length-1 ? 'disabled' : ''} title="아래로">▼</button>
+        <button class="icon-btn btn-move-down" data-idx="${idx}" ${idx === membersCache.length-1 ? 'disabled' : ''} title="아래로">▼</button>
       </td>
       <td>
-        <button class="btn-sm btn-edit" onclick="openMemberModal('${m.id}')">수정</button>
-        <button class="btn-sm btn-delete" onclick="confirmDeleteMember('${m.id}')">삭제</button>
+        <button class="btn-sm btn-edit" data-id="${escHtml(m.id)}">수정</button>
+        <button class="btn-sm btn-delete" data-id="${escHtml(m.id)}">삭제</button>
       </td>`;
     tbody.appendChild(tr);
   });
@@ -121,7 +133,7 @@ async function moveMember(idx, dir) {
     membersCache = await getMembers();
     renderMembersTable();
   } catch (e) {
-    alert('순서 변경 실패: ' + e.message);
+    showToast('순서 변경 실패: ' + e.message);
   }
 }
 
@@ -202,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
       membersCache = await getMembers();
       renderMembersTable();
     } catch (err) {
-      alert('저장 실패: ' + err.message);
+      showToast('저장 실패: ' + err.message);
     } finally {
       btn.disabled = false;
     }
@@ -227,8 +239,9 @@ async function confirmDeleteMember(id) {
     await deleteMember(id);
     membersCache = await getMembers();
     renderMembersTable();
+    showToast('삭제되었습니다.', 'success');
   } catch (e) {
-    alert('삭제 실패: ' + e.message);
+    showToast('삭제 실패: ' + e.message);
   }
 }
 
@@ -348,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('schedule-modal').classList.remove('active');
       await renderAdminCalendar();
     } catch (err) {
-      alert('저장 실패: ' + err.message);
+      showToast('저장 실패: ' + err.message);
     } finally {
       btn.disabled = false;
     }
@@ -399,7 +412,7 @@ async function loadApplicationsTab() {
     if (delBtn) {
       const id = delBtn.dataset.id;
       if (confirm('이 신청을 삭제하시겠습니까? 복구할 수 없습니다.')) {
-        deleteApplication(id).then(() => fetchAndRenderApps()).catch(err => alert('삭제 실패: ' + err.message));
+        deleteApplication(id).then(() => { fetchAndRenderApps(); showToast('삭제되었습니다.', 'success'); }).catch(err => showToast('삭제 실패: ' + err.message));
       }
       document.querySelectorAll('.app-more-menu.open').forEach(m => m.classList.remove('open'));
     }
@@ -417,7 +430,7 @@ async function loadApplicationsTab() {
     try {
       await updateApplication(input.dataset.id, { memo: input.value.trim() });
     } catch (err) {
-      alert('메모 저장 실패: ' + err.message);
+      showToast('메모 저장 실패: ' + err.message);
     }
   }, true);
 
@@ -499,8 +512,9 @@ async function setAppStatus(id, confirmed) {
   try {
     await updateApplication(id, { confirmed });
     await fetchAndRenderApps();
+    showToast(confirmed ? '확인 처리되었습니다.' : '대기 상태로 변경되었습니다.', 'success');
   } catch (e) {
-    alert('업데이트 실패: ' + e.message);
+    showToast('업데이트 실패: ' + e.message);
   }
 }
 
@@ -559,4 +573,28 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/* ── Toast ──────────────────────────────────────────────────── */
+
+function showToast(msg, type = 'error') {
+  let wrap = document.getElementById('admin-toast-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.id = 'admin-toast-wrap';
+    wrap.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;';
+    document.body.appendChild(wrap);
+  }
+
+  const toast = document.createElement('div');
+  const bg = type === 'success' ? '#2a7a4b' : type === 'info' ? '#2D2B6F' : '#b91c1c';
+  toast.style.cssText = `background:${bg};color:#fff;padding:12px 18px;border-radius:8px;font-size:0.92rem;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,0.2);max-width:320px;line-height:1.5;opacity:0;transition:opacity 0.2s;`;
+  toast.textContent = msg;
+  wrap.appendChild(toast);
+
+  requestAnimationFrame(() => { toast.style.opacity = '1'; });
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 200);
+  }, 4000);
 }
