@@ -328,84 +328,81 @@ section {
   stroke: var(--navy);
 }
 
-/* 2-1b: Answer Block */
-.about-answer-block {
+/* ══════════════════════════════════════════════════════════════
+ * Section 1-b: Intro CTA (영상 바로 아래)
+ * ══════════════════════════════════════════════════════════════ */
+
+.intro-cta-section {
+  background: #fff;
+  padding: 80px 0 72px;
   text-align: center;
-  padding: 60px 0 20px;
 }
 
-.about-answer-main {
-  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
-  color: var(--text);
-  line-height: 1.8;
-  margin-bottom: 28px;
+.intro-cta-inner {
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-.about-answer-main strong {
-  color: var(--navy);
-  font-weight: 800;
-}
-
-.about-answer-divider {
-  width: 1px;
-  height: 60px;
-  background: var(--navy-pale);
-  margin: 0 auto 28px;
-}
-
-.about-answer-sub {
-  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
-  color: var(--text);
-  line-height: 1.8;
-  margin-bottom: 52px;
-}
-
-.about-answer-sub strong {
-  color: var(--navy);
-  font-weight: 800;
-}
-
-.about-cta-label {
-  margin-bottom: 28px;
-}
-
-.about-cta-eyebrow {
-  font-size: 1rem;
-  color: var(--text-muted);
-  font-weight: 400;
+.intro-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 14px;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  margin-bottom: 20px;
 }
 
-.about-cta-eyebrow::after {
+.intro-eyebrow::after {
   content: '';
   display: inline-block;
-  width: 48px;
+  width: 56px;
   height: 1px;
   background: var(--text-muted);
 }
 
-.about-cta-heading {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
+.intro-heading {
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
   font-weight: 900;
   color: var(--navy);
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
 }
 
-.about-answer-desc {
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
+.intro-desc {
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
   color: var(--text);
   line-height: 1.85;
-  background: var(--gray-bg);
-  padding: 32px 40px;
-  border-radius: var(--radius);
-  display: inline-block;
 }
 
-.about-answer-desc strong {
+.intro-desc strong {
   color: var(--navy);
+  font-weight: 700;
+}
+
+/* 태블릿 (768px 이하) */
+@media (max-width: 768px) {
+  .intro-cta-section {
+    padding: 60px 0 56px;
+  }
+  .intro-eyebrow::after {
+    width: 36px;
+  }
+}
+
+/* 모바일 (480px 이하) */
+@media (max-width: 480px) {
+  .intro-cta-section {
+    padding: 48px 0 44px;
+  }
+  .intro-heading {
+    letter-spacing: -0.01em;
+  }
+  .intro-eyebrow::after {
+    display: none;
+  }
 }
 
 .pain-text {
