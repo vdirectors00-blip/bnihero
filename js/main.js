@@ -445,7 +445,7 @@ async function initVisitDate() {
     const picked = new Date(input.value + 'T00:00:00');
     if (picked.getDay() !== 5) {
       input.value = '';
-      alert('참관일은 매주 금요일만 선택 가능합니다.');
+      showFormMessage('error', '참관일은 매주 금요일만 선택 가능합니다.');
       return;
     }
     // 어드민 일정 조회 — 온라인/취소 여부 확인
@@ -459,10 +459,10 @@ async function initVisitDate() {
         const type = data[0].meeting_type;
         if (type === 'online') {
           input.value = '';
-          alert('해당 날짜는 온라인 화상회의로 진행됩니다.\n다른 금요일을 선택해주세요.');
+          showFormMessage('error', '해당 날짜는 온라인 화상회의로 진행됩니다. 다른 금요일을 선택해주세요.');
         } else if (type === 'cancelled') {
           input.value = '';
-          alert('해당 날짜는 회의가 없습니다.\n다른 날짜를 선택해주세요.');
+          showFormMessage('error', '해당 날짜는 회의가 없습니다. 다른 날짜를 선택해주세요.');
         }
       }
     } catch(e) {}

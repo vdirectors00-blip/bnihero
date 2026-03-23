@@ -223,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
       closeMemberModal();
       membersCache = await getMembers();
       renderMembersTable();
+      showToast(editingMemberId ? '수정되었습니다.' : '추가되었습니다.', 'success');
     } catch (err) {
       showToast('저장 실패: ' + err.message);
     } finally {
