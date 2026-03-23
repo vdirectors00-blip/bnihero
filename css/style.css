@@ -98,13 +98,13 @@ section {
 }
 
 .nav-logo-img {
-  height: 36px;
+  height: 28px;
   width: auto;
   display: block;
 }
 
 @media (max-width: 600px) {
-  .nav-logo-img { height: 28px; }
+  .nav-logo-img { height: 22px; }
 }
 
 #nav-menu {
@@ -116,7 +116,7 @@ section {
 
 #nav-menu a {
   color: rgba(255,255,255,0.85);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 500;
   padding: 8px 12px;
   border-radius: 6px;
@@ -311,9 +311,101 @@ section {
 }
 
 .pain-icon {
-  font-size: 2rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--navy-pale);
+  border-radius: 12px;
   flex-shrink: 0;
+  color: var(--navy);
+}
+
+.pain-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--navy);
+}
+
+/* 2-1b: Answer Block */
+.about-answer-block {
+  text-align: center;
+  padding: 60px 0 20px;
+}
+
+.about-answer-main {
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+
+.about-answer-main strong {
+  color: var(--navy);
+  font-weight: 800;
+}
+
+.about-answer-divider {
+  width: 1px;
+  height: 60px;
+  background: var(--navy-pale);
+  margin: 0 auto 28px;
+}
+
+.about-answer-sub {
+  font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 52px;
+}
+
+.about-answer-sub strong {
+  color: var(--navy);
+  font-weight: 800;
+}
+
+.about-cta-label {
+  margin-bottom: 28px;
+}
+
+.about-cta-eyebrow {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.about-cta-eyebrow::after {
+  content: '';
+  display: inline-block;
+  width: 48px;
+  height: 1px;
+  background: var(--text-muted);
+}
+
+.about-cta-heading {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  color: var(--navy);
+  line-height: 1.2;
+}
+
+.about-answer-desc {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  color: var(--text);
+  line-height: 1.85;
+  background: var(--gray-bg);
+  padding: 32px 40px;
+  border-radius: var(--radius);
+  display: inline-block;
+}
+
+.about-answer-desc strong {
+  color: var(--navy);
 }
 
 .pain-text {
@@ -656,6 +748,7 @@ section {
   max-width: 740px;
   margin: 0 auto 52px;
   line-height: 1.85;
+  text-align: center;
 }
 
 .bni-blocks {
@@ -1642,9 +1735,21 @@ section {
 }
 
 .info-row-icon {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--navy-pale);
+  border-radius: 8px;
   flex-shrink: 0;
-  margin-top: 2px;
+  color: var(--navy);
+}
+
+.info-row-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--navy);
 }
 
 .info-row-content {}
