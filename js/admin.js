@@ -2,17 +2,17 @@
  * admin.js – BNI 히어로챕터 Admin Dashboard
  * ============================================================ */
 
-const ADMIN_PASSWORD = 'kinghero';
+const ADMIN_EMAIL = 'admin@bnihero.kr';
 
-document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
+document.addEventListener('DOMContentLoaded', async () => {
+  await checkAuth();
 });
 
 /* ── Auth ───────────────────────────────────────────────────── */
 
-function checkAuth() {
-  const authed = sessionStorage.getItem('bni_admin_auth');
-  if (authed === '1') {
+async function checkAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
     showDashboard();
   } else {
     showLogin();
@@ -24,14 +24,24 @@ function showLogin() {
   document.getElementById('dashboard-screen').style.display = 'none';
 
   const form = document.getElementById('login-form');
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const pw = document.getElementById('login-pw').value;
-    if (pw === ADMIN_PASSWORD) {
-      sessionStorage.setItem('bni_admin_auth', '1');
-      showDashboard();
-    } else {
+    const btn = form.querySelector('button[type="submit"]');
+    const pw  = document.getElementById('login-pw').value;
+    btn.disabled = true;
+    btn.textContent = '로그인 중...';
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
+      password: pw,
+    });
+
+    if (error) {
       document.getElementById('login-error').textContent = '비밀번호가 올바르지 않습니다.';
+      btn.disabled = false;
+      btn.textContent = '로그인';
+    } else {
+      showDashboard();
     }
   });
 }
@@ -46,8 +56,8 @@ function showDashboard() {
   loadApplicationsTab();
   loadSettingsTab();
 
-  document.getElementById('logout-btn')?.addEventListener('click', () => {
-    sessionStorage.removeItem('bni_admin_auth');
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
     location.reload();
   });
 }
