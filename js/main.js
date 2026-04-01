@@ -305,8 +305,17 @@ function openCardModal(imgUrl, name) {
   const modal  = document.getElementById('card-modal');
   const img    = document.getElementById('modal-card-img');
   const title  = document.getElementById('modal-card-title');
+  const box    = modal?.querySelector('.modal-box');
   if (!modal) return;
-  if (img)   { img.src = imgUrl; img.alt = name + ' 명함'; }
+  if (img) {
+    img.src = imgUrl;
+    img.alt = name + ' 명함';
+    img.onload = () => {
+      const ratio = img.naturalWidth / img.naturalHeight;
+      if (box) box.style.maxWidth = ratio > 2 ? '900px' : '640px';
+    };
+  }
+  if (box) box.style.maxWidth = '640px';
   if (title) title.textContent = name;
   modal.classList.add('active');
   document.body.style.overflow = 'hidden';

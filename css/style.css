@@ -1057,8 +1057,6 @@ section {
   border-radius: 8px;
   border: 1px solid #eee;
   display: block;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 
 .modal-close {
