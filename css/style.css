@@ -1028,7 +1028,7 @@ section {
 .modal-box {
   background: #fff;
   border-radius: var(--radius);
-  max-width: 90vw;
+  max-width: 680px;
   width: 90vw;
   max-height: 90vh;
   overflow: auto;
