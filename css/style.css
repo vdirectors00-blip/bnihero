@@ -1012,12 +1012,12 @@ section {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.75);
   z-index: 2000;
   display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
   backdrop-filter: blur(4px);
 }
 
@@ -1028,11 +1028,11 @@ section {
 .modal-box {
   background: #fff;
   border-radius: var(--radius);
-  max-width: 480px;
-  width: 100%;
+  max-width: 90vw;
+  width: 90vw;
   max-height: 90vh;
-  overflow-y: auto;
-  padding: 24px;
+  overflow: auto;
+  padding: 20px;
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   animation: modal-in 0.25s ease;
@@ -1047,14 +1047,18 @@ section {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--navy);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
 }
 
 .modal-card-img {
   width: 100%;
+  height: auto;
   border-radius: 8px;
   border: 1px solid #eee;
+  display: block;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 .modal-close {
@@ -2077,6 +2081,10 @@ footer {
   .members-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Card Modal - mobile */
+  .modal-overlay { padding: 8px; }
+  .modal-box { padding: 12px; max-width: 100%; width: 100%; }
 
   /* Apply */
   .apply-layout {
