@@ -567,6 +567,7 @@ async function loadWpTab() {
   refreshBtn?.addEventListener('click', async () => {
     await populateWpWeekSelect();
     await renderWpTable();
+    await renderWpUsage();
   });
 
   zipBtn?.addEventListener('click', async () => {
@@ -582,6 +583,7 @@ async function loadWpTab() {
       showToast(`${res.deleted}개 파일 삭제 완료`, 'success');
       await populateWpWeekSelect();
       await renderWpTable();
+      await renderWpUsage();
     } catch (err) {
       showToast('삭제 실패: ' + err.message);
     } finally {
@@ -601,6 +603,7 @@ async function loadWpTab() {
         await deleteWpSubmission(delBtn.dataset.id, delBtn.dataset.path);
         showToast('삭제되었습니다.', 'success');
         await renderWpTable();
+        await renderWpUsage();
       } catch (err) {
         showToast('삭제 실패: ' + err.message);
       }
@@ -611,10 +614,36 @@ async function loadWpTab() {
   document.querySelector('[data-tab="tab-wp"]')?.addEventListener('click', async () => {
     await populateWpWeekSelect();
     await renderWpTable();
+    await renderWpUsage();
   });
 
   // 초기 렌더
   if (wpCurrentWeek) await renderWpTable();
+  await renderWpUsage();
+}
+
+async function renderWpUsage() {
+  const textEl = document.getElementById('wp-usage-text');
+  const pctEl = document.getElementById('wp-usage-pct');
+  const barEl = document.getElementById('wp-usage-bar');
+  if (!textEl) return;
+  try {
+    const { totalBytes } = await getWpStorageUsage();
+    const LIMIT = 1024 * 1024 * 1024; // 1GB
+    const pct = Math.min(100, (totalBytes / LIMIT) * 100);
+    textEl.textContent = `(${formatFileSize(totalBytes)} / 1 GB)`;
+    pctEl.textContent = pct.toFixed(1) + '%';
+    barEl.style.width = pct + '%';
+    // 색상: <70 녹색, 70~90 주황, >90 빨강
+    let color = '#2a7a4b';
+    if (pct >= 90) color = '#b91c1c';
+    else if (pct >= 70) color = '#d97706';
+    barEl.style.background = color;
+    pctEl.style.color = color;
+  } catch (e) {
+    textEl.textContent = '(조회 실패)';
+    console.error(e);
+  }
 }
 
 async function populateWpWeekSelect() {

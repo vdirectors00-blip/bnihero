@@ -393,12 +393,34 @@ async function deleteWpWeek(weekDate) {
 }
 
 /**
- * 2주 이상 지난 주차 자동 삭제. admin 로그인 시 호출.
+ * 주차별 용량 집계. 반환: { totalBytes, byWeek: [{week_date, bytes, count}] }
+ */
+async function getWpStorageUsage() {
+  const { data, error } = await supabaseClient
+    .from('wp_submissions')
+    .select('week_date, file_size')
+    .order('week_date', { ascending: false });
+  if (error) { console.error('getWpStorageUsage:', error); return { totalBytes: 0, byWeek: [] }; }
+  const map = new Map();
+  let total = 0;
+  (data || []).forEach(r => {
+    const size = r.file_size || 0;
+    total += size;
+    const cur = map.get(r.week_date) || { week_date: r.week_date, bytes: 0, count: 0 };
+    cur.bytes += size;
+    cur.count += 1;
+    map.set(r.week_date, cur);
+  });
+  return { totalBytes: total, byWeek: Array.from(map.values()) };
+}
+
+/**
+ * 4주 이상 지난 주차 자동 삭제. admin 로그인 시 호출.
  * 반환: { purgedWeeks: [...], totalDeleted: n }
  */
 async function autoPurgeOldWp() {
   const cutoff = new Date();
-  cutoff.setDate(cutoff.getDate() - 14);
+  cutoff.setDate(cutoff.getDate() - 28);
   const cutoffStr = _fmt(cutoff);
 
   const { data, error } = await supabaseClient

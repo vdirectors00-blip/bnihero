@@ -162,10 +162,24 @@
           <button id="wp-purge-week" class="btn-sm" style="padding:8px 14px;background:#b91c1c;color:#fff;border-color:#b91c1c;">이 주차 전체 삭제</button>
         </div>
 
-        <p style="font-size:0.85rem;color:#888;margin-bottom:12px;">
-          공개 제출 링크: <a href="/weekly/" target="_blank" style="color:#2D2B6F;">https://bnihero.kr/weekly/</a><br/>
-          <span style="color:#9a1e1e;">※ 2주 이상 지난 주차는 자동 삭제됩니다. 취합 끝나면 [이 주차 전체 삭제]로 즉시 정리 권장.</span>
+        <p style="font-size:0.85rem;color:#888;margin-bottom:8px;">
+          공개 제출 링크: <a href="/weekly/" target="_blank" style="color:#2D2B6F;">https://bnihero.kr/weekly/</a>
         </p>
+
+        <!-- 용량 현황 -->
+        <div id="wp-usage-box" style="background:#f4f6fb;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:0.88rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span><strong>스토리지 사용량</strong> <span id="wp-usage-text" style="color:#555;">계산 중...</span></span>
+            <span id="wp-usage-pct" style="font-weight:700;">-</span>
+          </div>
+          <div style="background:#e4e6f0;height:10px;border-radius:999px;overflow:hidden;">
+            <div id="wp-usage-bar" style="height:100%;background:#2a7a4b;width:0%;transition:width 0.3s;"></div>
+          </div>
+          <p style="color:#9a1e1e;margin-top:8px;font-size:0.82rem;line-height:1.5;">
+            ※ 무료 플랜 한도: 1GB. 4주 이상 지난 주차는 자동 삭제됩니다.<br/>
+            취합 끝난 주차는 [이 주차 전체 삭제]로 즉시 정리하면 용량 여유 생깁니다.
+          </p>
+        </div>
 
         <div class="admin-table-wrap">
           <table class="admin-table">
