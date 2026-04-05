@@ -314,7 +314,8 @@
 
       // 마감 체크 (?closed=1 파라미터로 강제 미리보기 가능)
       const forceClosed = new URLSearchParams(location.search).get('closed') === '1';
-      if (forceClosed || isWpUploadClosed(currentWeek)) {
+      const closed = forceClosed || isWpUploadClosed(currentWeek);
+      if (closed) {
         document.getElementById('upload-card').style.display = 'none';
         document.getElementById('closed-card').style.display = 'block';
         document.getElementById('next-open-text').textContent =
@@ -323,9 +324,9 @@
         initForm();
       }
 
-      // 제출목록 먼저 로드해서 드롭다운 ✓ 표시에 플래시 없게
+      // 제출목록은 항상 표시, 멤버 드롭다운은 업로드 가능할 때만
       await loadSubmissions();
-      await loadMembers();
+      if (!closed) await loadMembers();
     });
 
     const DOW = ['일','월','화','수','목','금','토'];
@@ -437,7 +438,7 @@
         if (!f) { selectedFile = null; fileZone.classList.remove('has-file'); updateBtn(); return; }
         const name = (f.name || '').toLowerCase();
         if (!name.endsWith('.pptx') && !name.endsWith('.ppt')) {
-          showMsg('err', 'PowerPoint(.pptx) 파일만 업로드 가능합니다.');
+          showMsg('err', 'PowerPoint 파일(.pptx 또는 .ppt)만 업로드 가능합니다.');
           fileInput.value = '';
           selectedFile = null;
           fileZone.classList.remove('has-file');
@@ -488,27 +489,28 @@
           showProgress(40);
           await uploadWpFile(selectedFile, currentWeek, company);
           showProgress(100);
-          // 폼 초기화 (회사명도 초기화해서 "이미 제출" 경고가 덮어쓰지 않도록)
+          // 폼 초기화
           selectedFile = null;
           fileInput.value = '';
           fileZone.classList.remove('has-file');
           companySel.value = '';
+          submitBtn.disabled = true;  // 회사·파일 없음
           await loadSubmissions();
-          // 초기화 완료 후 성공 메시지 표시 (updateBtn이 hideMsg 하지 않도록 마지막에)
           showMsg('ok', `✅ 제출 완료! ${company}님의 자료가 업로드되었습니다.`);
         } catch (err) {
           console.error(err);
           if (err.code === 'ALREADY_SUBMITTED') {
-            showMsg('info', `⚠️ ${company}님은 이미 제출하셨습니다.\n파일을 교체하려면 ST손휘민(카톡)에게 연락주세요.`);
-            await loadSubmissions();  // 목록 새로고침
+            // updateBtn이 경고 메시지 + 버튼 비활성화 처리
+            await loadSubmissions();
             updateBtn();
           } else {
             showMsg('err', '업로드 실패: ' + (err.message || '다시 시도해주세요'));
+            // 재시도 가능하도록 버튼 복원
+            submitBtn.disabled = !(companySel.value && selectedFile);
           }
         } finally {
           setTimeout(() => hideProgress(), 600);
           submitBtn.textContent = '제출하기';
-          submitBtn.disabled = !(companySel.value && selectedFile);
         }
       });
     }
@@ -524,6 +526,7 @@
     }
     function hideMsg() {
       document.getElementById('msg').className = 'msg hidden';
+      if (msgHideTimer) { clearTimeout(msgHideTimer); msgHideTimer = null; }
     }
     function showProgress(pct) {
       const bar = document.getElementById('progress-bar');

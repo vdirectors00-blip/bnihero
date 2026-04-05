@@ -545,7 +545,7 @@ async function loadWpTab() {
   const purgeBtn = document.getElementById('wp-purge-week');
   if (!select) return;
 
-  // 2주 이상 지난 주차 자동 삭제 (세션당 1회)
+  // 4주 이상 지난 주차 자동 삭제 (세션당 1회)
   if (!wpAutoPurgeDone) {
     wpAutoPurgeDone = true;
     try {
@@ -727,12 +727,14 @@ async function downloadSingleWp(path, filename) {
 async function downloadWpZip() {
   if (!wpCurrentWeek) { showToast('주차를 선택해주세요.'); return; }
   const btn = document.getElementById('wp-download-zip');
+  const purgeBtn = document.getElementById('wp-purge-week');
   const origText = btn.textContent;
   btn.disabled = true;
+  if (purgeBtn) purgeBtn.disabled = true;  // ZIP 중 주차삭제 방지
 
   try {
     const subs = await getWpSubmissions(wpCurrentWeek);
-    if (subs.length === 0) { showToast('제출된 자료가 없습니다.', 'info'); btn.disabled = false; btn.textContent = origText; return; }
+    if (subs.length === 0) { showToast('제출된 자료가 없습니다.', 'info'); return; }
 
     const zip = new JSZip();
     for (let i = 0; i < subs.length; i++) {
@@ -757,6 +759,7 @@ async function downloadWpZip() {
   } finally {
     btn.disabled = false;
     btn.textContent = origText;
+    if (purgeBtn) purgeBtn.disabled = false;
   }
 }
 
