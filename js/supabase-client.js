@@ -287,11 +287,19 @@ function isWpUploadClosed(weekDate, now) {
   return cur >= wedNoon;
 }
 
+// 한글/괄호 등을 ASCII-safe 키로 변환 (base64url, 결정적 = 같은 입력 → 같은 출력)
+function toSafeStorageKey(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 async function uploadWpFile(file, weekDate, companyName) {
   // 확장자 추출 (pptx 외에도 케이스 대응)
   const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
-  // Supabase storage key는 한글/괄호 등 non-ASCII 제한 → URL 인코딩
-  const safeCompany = encodeURIComponent(companyName);
+  // Supabase storage는 키에 한글/괄호/% 전부 거부 → base64url 슬러그 사용
+  const safeCompany = toSafeStorageKey(companyName);
   const path = `${weekDate}/${safeCompany}.${ext}`;
 
   const { error: upErr } = await supabaseClient.storage
