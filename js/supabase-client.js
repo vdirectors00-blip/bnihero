@@ -290,8 +290,8 @@ function isWpUploadClosed(weekDate, now) {
 async function uploadWpFile(file, weekDate, companyName) {
   // 확장자 추출 (pptx 외에도 케이스 대응)
   const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
-  // 한글 파일명을 경로에 쓰면 깨질 수 있어서 안전한 파일명 구성
-  const safeCompany = companyName.replace(/[\/\\?%*:|"<>]/g, '_');
+  // Supabase storage key는 한글/괄호 등 non-ASCII 제한 → URL 인코딩
+  const safeCompany = encodeURIComponent(companyName);
   const path = `${weekDate}/${safeCompany}.${ext}`;
 
   const { error: upErr } = await supabaseClient.storage
