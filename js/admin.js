@@ -536,14 +536,27 @@ async function setAppStatus(id, confirmed) {
  * ══════════════════════════════════════════════════════════════ */
 
 let wpCurrentWeek = null;
+let wpAutoPurgeDone = false;
 
 async function loadWpTab() {
   const select = document.getElementById('wp-week-select');
   const refreshBtn = document.getElementById('wp-refresh-btn');
   const zipBtn = document.getElementById('wp-download-zip');
+  const purgeBtn = document.getElementById('wp-purge-week');
   if (!select) return;
 
-  // 주차 드롭다운 구성: 다음 금요일 + 과거 DB에 있는 주차들
+  // 2주 이상 지난 주차 자동 삭제 (세션당 1회)
+  if (!wpAutoPurgeDone) {
+    wpAutoPurgeDone = true;
+    try {
+      const res = await autoPurgeOldWp();
+      if (res.totalDeleted > 0) {
+        showToast(`오래된 주차 ${res.purgedWeeks.length}개 자동 정리됨 (${res.totalDeleted}개 파일)`, 'info');
+      }
+    } catch (e) { console.warn('autoPurge:', e); }
+  }
+
+  // 주차 드롭다운 구성
   await populateWpWeekSelect();
 
   select.addEventListener('change', async () => {
@@ -558,6 +571,22 @@ async function loadWpTab() {
 
   zipBtn?.addEventListener('click', async () => {
     await downloadWpZip();
+  });
+
+  purgeBtn?.addEventListener('click', async () => {
+    if (!wpCurrentWeek) { showToast('주차를 선택해주세요.'); return; }
+    if (!confirm(`${wpCurrentWeek} 주차의 모든 제출 자료를 삭제합니다.\n계속하시겠습니까?\n(되돌릴 수 없음)`)) return;
+    purgeBtn.disabled = true;
+    try {
+      const res = await deleteWpWeek(wpCurrentWeek);
+      showToast(`${res.deleted}개 파일 삭제 완료`, 'success');
+      await populateWpWeekSelect();
+      await renderWpTable();
+    } catch (err) {
+      showToast('삭제 실패: ' + err.message);
+    } finally {
+      purgeBtn.disabled = false;
+    }
   });
 
   document.getElementById('wp-tbody')?.addEventListener('click', async (e) => {
@@ -693,7 +722,7 @@ async function downloadWpZip() {
       btn.textContent = `ZIP 생성 중... ${Math.round(meta.percent)}%`;
     });
     triggerDownload(content, `WP_${wpCurrentWeek}.zip`);
-    showToast(`${subs.length}개 파일 ZIP 다운로드 완료`, 'success');
+    showToast(`${subs.length}개 파일 ZIP 다운로드 완료. 취합 끝나면 [이 주차 전체 삭제] 눌러주세요.`, 'success');
   } catch (err) {
     showToast('ZIP 다운로드 실패: ' + err.message);
   } finally {

@@ -365,6 +365,61 @@ async function downloadWpBlob(filePath) {
   return data;  // Blob
 }
 
+/**
+ * 특정 주차 전체 삭제 (DB + storage).
+ * 반환: { deleted: n, errors: [] }
+ */
+async function deleteWpWeek(weekDate) {
+  // 해당 주차의 모든 파일 경로 조회
+  const { data, error } = await supabaseClient
+    .from('wp_submissions')
+    .select('file_path')
+    .eq('week_date', weekDate);
+  if (error) throw error;
+  const paths = (data || []).map(r => r.file_path);
+  if (paths.length === 0) return { deleted: 0 };
+
+  // storage 먼저 일괄 삭제
+  const { error: stErr } = await supabaseClient.storage
+    .from(WP_BUCKET).remove(paths);
+  if (stErr) console.warn('storage bulk remove warn:', stErr);
+
+  // DB 삭제
+  const { error: dbErr } = await supabaseClient
+    .from('wp_submissions').delete().eq('week_date', weekDate);
+  if (dbErr) throw dbErr;
+
+  return { deleted: paths.length };
+}
+
+/**
+ * 2주 이상 지난 주차 자동 삭제. admin 로그인 시 호출.
+ * 반환: { purgedWeeks: [...], totalDeleted: n }
+ */
+async function autoPurgeOldWp() {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 14);
+  const cutoffStr = _fmt(cutoff);
+
+  const { data, error } = await supabaseClient
+    .from('wp_submissions')
+    .select('week_date')
+    .lt('week_date', cutoffStr);
+  if (error) { console.error('autoPurge select:', error); return { purgedWeeks: [], totalDeleted: 0 }; }
+
+  const weeks = Array.from(new Set((data || []).map(r => r.week_date)));
+  let total = 0;
+  for (const w of weeks) {
+    try {
+      const res = await deleteWpWeek(w);
+      total += res.deleted;
+    } catch (e) {
+      console.error('autoPurge delete week', w, e);
+    }
+  }
+  return { purgedWeeks: weeks, totalDeleted: total };
+}
+
 async function deleteWpSubmission(id, filePath) {
   // 스토리지 파일 먼저 삭제
   const { error: stErr } = await supabaseClient.storage
