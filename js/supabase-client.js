@@ -300,7 +300,9 @@ async function uploadWpFile(file, weekDate, companyName) {
   const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
   // Supabase storage는 키에 한글/괄호/% 전부 거부 → base64url 슬러그 사용
   const safeCompany = toSafeStorageKey(companyName);
-  const path = `${weekDate}/${safeCompany}.${ext}`;
+  // 타임스탬프 포함 → 항상 유니크 경로 (upsert 불필요, 보안 정책 최소화)
+  const ts = Date.now();
+  const path = `${weekDate}/${safeCompany}_${ts}.${ext}`;
 
   const record = {
     week_date: weekDate,
@@ -327,7 +329,7 @@ async function uploadWpFile(file, weekDate, companyName) {
   // 2. Storage 업로드 (실패 시 DB 롤백)
   const { error: upErr } = await supabaseClient.storage
     .from(WP_BUCKET)
-    .upload(path, file, { upsert: true, contentType: file.type || undefined });
+    .upload(path, file, { upsert: false, contentType: file.type || undefined });
   if (upErr) {
     await supabaseClient.from('wp_submissions')
       .delete().eq('week_date', weekDate).eq('company_name', companyName);
