@@ -465,12 +465,14 @@
           showProgress(40);
           await uploadWpFile(selectedFile, currentWeek, company);
           showProgress(100);
-          showMsg('ok', `✅ 제출 완료! ${company}님의 자료가 업로드되었습니다.`);
-          // 폼 초기화 (같은 분이 또 올릴 수 있도록)
+          // 폼 초기화 (회사명도 초기화해서 "이미 제출" 경고가 덮어쓰지 않도록)
           selectedFile = null;
           fileInput.value = '';
           fileZone.classList.remove('has-file');
+          companySel.value = '';
           await loadSubmissions();
+          // 초기화 완료 후 성공 메시지 표시 (updateBtn이 hideMsg 하지 않도록 마지막에)
+          showMsg('ok', `✅ 제출 완료! ${company}님의 자료가 업로드되었습니다.`);
         } catch (err) {
           console.error(err);
           if (err.code === 'ALREADY_SUBMITTED') {
@@ -483,7 +485,7 @@
         } finally {
           setTimeout(() => hideProgress(), 600);
           submitBtn.textContent = '제출하기';
-          updateBtn();
+          submitBtn.disabled = !(companySel.value && selectedFile);
         }
       });
     }
