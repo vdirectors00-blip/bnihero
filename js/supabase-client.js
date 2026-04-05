@@ -300,10 +300,27 @@ async function uploadWpFile(file, weekDate, companyName) {
   const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
   // Supabase storage는 키에 한글/괄호/% 전부 거부 → base64url 슬러그 사용
   const safeCompany = toSafeStorageKey(companyName);
-  // 타임스탬프 포함 → 항상 유니크 경로 (upsert 불필요, 보안 정책 최소화)
+  // 타임스탬프 포함 → 항상 유니크 경로
   const ts = Date.now();
   const path = `${weekDate}/${safeCompany}_${ts}.${ext}`;
 
+  // 사전 체크: 이미 제출됐는지 (UX 빠른 피드백 + 불필요한 storage upload 방지)
+  const { data: existing } = await supabaseClient
+    .from('wp_submissions')
+    .select('id').eq('week_date', weekDate).eq('company_name', companyName).maybeSingle();
+  if (existing) {
+    const err = new Error('ALREADY_SUBMITTED');
+    err.code = 'ALREADY_SUBMITTED';
+    throw err;
+  }
+
+  // 1. Storage 먼저 업로드 (유니크 경로라 충돌 없음)
+  const { error: upErr } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .upload(path, file, { upsert: false, contentType: file.type || undefined });
+  if (upErr) throw upErr;
+
+  // 2. DB insert (UNIQUE 제약 = race condition 최종 방어선)
   const record = {
     week_date: weekDate,
     company_name: companyName,
@@ -311,29 +328,18 @@ async function uploadWpFile(file, weekDate, companyName) {
     file_name: file.name,
     file_size: file.size,
   };
-
-  // 1. DB에 먼저 insert (UNIQUE 제약 = 중복 제출 차단)
   const { error: dbErr } = await supabaseClient
     .from('wp_submissions')
     .insert(record);
   if (dbErr) {
+    // DB insert 실패 시 storage orphan 파일 정리는 관리자가 수동/자동 purge
+    // (anon은 storage delete 권한 없음)
     if (dbErr.code === '23505') {
-      // duplicate key
       const err = new Error('ALREADY_SUBMITTED');
       err.code = 'ALREADY_SUBMITTED';
       throw err;
     }
     throw dbErr;
-  }
-
-  // 2. Storage 업로드 (실패 시 DB 롤백)
-  const { error: upErr } = await supabaseClient.storage
-    .from(WP_BUCKET)
-    .upload(path, file, { upsert: false, contentType: file.type || undefined });
-  if (upErr) {
-    await supabaseClient.from('wp_submissions')
-      .delete().eq('week_date', weekDate).eq('company_name', companyName);
-    throw upErr;
   }
 
   return record;
