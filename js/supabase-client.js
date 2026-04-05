@@ -296,16 +296,11 @@ function toSafeStorageKey(str) {
 }
 
 async function uploadWpFile(file, weekDate, companyName) {
-  // 확장자 추출 (pptx 외에도 케이스 대응)
+  // 확장자 추출
   const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
   // Supabase storage는 키에 한글/괄호/% 전부 거부 → base64url 슬러그 사용
   const safeCompany = toSafeStorageKey(companyName);
   const path = `${weekDate}/${safeCompany}.${ext}`;
-
-  const { error: upErr } = await supabaseClient.storage
-    .from(WP_BUCKET)
-    .upload(path, file, { upsert: true, contentType: file.type || undefined });
-  if (upErr) throw upErr;
 
   const record = {
     week_date: weekDate,
@@ -314,10 +309,30 @@ async function uploadWpFile(file, weekDate, companyName) {
     file_name: file.name,
     file_size: file.size,
   };
+
+  // 1. DB에 먼저 insert (UNIQUE 제약 = 중복 제출 차단)
   const { error: dbErr } = await supabaseClient
     .from('wp_submissions')
-    .upsert(record, { onConflict: 'week_date,company_name' });
-  if (dbErr) throw dbErr;
+    .insert(record);
+  if (dbErr) {
+    if (dbErr.code === '23505') {
+      // duplicate key
+      const err = new Error('ALREADY_SUBMITTED');
+      err.code = 'ALREADY_SUBMITTED';
+      throw err;
+    }
+    throw dbErr;
+  }
+
+  // 2. Storage 업로드 (실패 시 DB 롤백)
+  const { error: upErr } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .upload(path, file, { upsert: true, contentType: file.type || undefined });
+  if (upErr) {
+    await supabaseClient.from('wp_submissions')
+      .delete().eq('week_date', weekDate).eq('company_name', companyName);
+    throw upErr;
+  }
 
   return record;
 }

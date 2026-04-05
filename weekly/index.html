@@ -144,6 +144,7 @@
       font-size: 1rem;
       text-align: center;
       line-height: 1.5;
+      white-space: pre-line;
     }
     .msg.ok    { background: #e6f5ed; color: #1d5c38; }
     .msg.err   { background: #fce8e8; color: #9a1e1e; }
@@ -295,6 +296,7 @@
   <script>
     let currentWeek = null;
     let selectedFile = null;
+    let submittedCompanies = new Set();  // 이번 주 이미 제출한 회사명
 
     document.addEventListener('DOMContentLoaded', async () => {
       // 가장 가까운 오프라인 회의일 조회
@@ -357,6 +359,7 @@
       const countEl = document.getElementById('list-count');
       try {
         const subs = await getWpSubmissions(currentWeek);
+        submittedCompanies = new Set(subs.map(s => s.company_name));
         countEl.textContent = subs.length > 0 ? `(${subs.length}명)` : '';
         if (subs.length === 0) {
           list.innerHTML = '<li class="empty">아직 제출한 분이 없습니다</li>';
@@ -396,6 +399,13 @@
       const form = document.getElementById('wp-form');
 
       function updateBtn() {
+        const alreadySubmitted = companySel.value && submittedCompanies.has(companySel.value);
+        if (alreadySubmitted) {
+          submitBtn.disabled = true;
+          showMsg('info', `⚠️ ${companySel.value}님은 이미 제출하셨습니다.\n파일을 교체하려면 ST손휘민(카톡)에게 연락주세요.`);
+          return;
+        }
+        hideMsg();
         submitBtn.disabled = !(companySel.value && selectedFile);
       }
 
@@ -463,7 +473,13 @@
           await loadSubmissions();
         } catch (err) {
           console.error(err);
-          showMsg('err', '업로드 실패: ' + (err.message || '다시 시도해주세요'));
+          if (err.code === 'ALREADY_SUBMITTED') {
+            showMsg('info', `⚠️ ${company}님은 이미 제출하셨습니다.\n파일을 교체하려면 ST손휘민(카톡)에게 연락주세요.`);
+            await loadSubmissions();  // 목록 새로고침
+            updateBtn();
+          } else {
+            showMsg('err', '업로드 실패: ' + (err.message || '다시 시도해주세요'));
+          }
         } finally {
           setTimeout(() => hideProgress(), 600);
           submitBtn.textContent = '제출하기';
