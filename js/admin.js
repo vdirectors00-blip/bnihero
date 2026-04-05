@@ -54,6 +54,7 @@ function showDashboard() {
   loadMembersTab();
   loadScheduleTab();
   loadApplicationsTab();
+  loadWpTab();
   loadSettingsTab();
 
   document.getElementById('logout-btn')?.addEventListener('click', async () => {
@@ -527,6 +528,197 @@ async function setAppStatus(id, confirmed) {
   } catch (e) {
     showToast('업데이트 실패: ' + e.message);
   }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+ * Tab: WP 취합
+ * ══════════════════════════════════════════════════════════════ */
+
+let wpCurrentWeek = null;
+
+async function loadWpTab() {
+  const select = document.getElementById('wp-week-select');
+  const refreshBtn = document.getElementById('wp-refresh-btn');
+  const zipBtn = document.getElementById('wp-download-zip');
+  if (!select) return;
+
+  // 주차 드롭다운 구성: 다음 금요일 + 과거 DB에 있는 주차들
+  await populateWpWeekSelect();
+
+  select.addEventListener('change', async () => {
+    wpCurrentWeek = select.value;
+    await renderWpTable();
+  });
+
+  refreshBtn?.addEventListener('click', async () => {
+    await populateWpWeekSelect();
+    await renderWpTable();
+  });
+
+  zipBtn?.addEventListener('click', async () => {
+    await downloadWpZip();
+  });
+
+  document.getElementById('wp-tbody')?.addEventListener('click', async (e) => {
+    const dlBtn = e.target.closest('.wp-download-btn');
+    const delBtn = e.target.closest('.wp-delete-btn');
+    if (dlBtn) {
+      await downloadSingleWp(dlBtn.dataset.path, dlBtn.dataset.filename);
+    }
+    if (delBtn) {
+      if (!confirm(`${delBtn.dataset.company} 제출을 삭제하시겠습니까?`)) return;
+      try {
+        await deleteWpSubmission(delBtn.dataset.id, delBtn.dataset.path);
+        showToast('삭제되었습니다.', 'success');
+        await renderWpTable();
+      } catch (err) {
+        showToast('삭제 실패: ' + err.message);
+      }
+    }
+  });
+
+  // 초기 선택
+  if (select.options.length > 0) {
+    wpCurrentWeek = select.value;
+    await renderWpTable();
+  }
+}
+
+async function populateWpWeekSelect() {
+  const select = document.getElementById('wp-week-select');
+  const prevValue = select.value;
+  select.innerHTML = '';
+
+  // 다음 오프라인 회의일 (실패 시 다음 금요일 폴백)
+  let nextMeeting = null;
+  try { nextMeeting = await getNextOfflineMeeting(); } catch(e) {}
+  if (!nextMeeting) nextMeeting = getNextFriday();
+
+  const pastWeeks = await getWpWeekDates();
+  const all = Array.from(new Set([nextMeeting, ...pastWeeks])).sort((a, b) => b.localeCompare(a));
+  const DOW = ['일','월','화','수','목','금','토'];
+
+  all.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w;
+    const d = new Date(w + 'T00:00:00');
+    const label = `${w} (${d.getMonth()+1}/${d.getDate()} ${DOW[d.getDay()]})`;
+    opt.textContent = w === nextMeeting ? label + ' · 다가오는 회의' : label;
+    select.appendChild(opt);
+  });
+
+  // 이전 선택 유지, 없으면 기본값 = 다가오는 회의
+  if (prevValue && all.includes(prevValue)) {
+    select.value = prevValue;
+  } else {
+    select.value = nextMeeting;
+  }
+}
+
+async function renderWpTable() {
+  const tbody = document.getElementById('wp-tbody');
+  if (!tbody || !wpCurrentWeek) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">불러오는 중…</td></tr>';
+
+  try {
+    const subs = await getWpSubmissions(wpCurrentWeek);
+    if (subs.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#888;">제출된 자료가 없습니다.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = '';
+    subs.forEach((s, idx) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${idx + 1}</td>
+        <td><strong>${escHtml(s.company_name)}</strong></td>
+        <td>${escHtml(s.file_name || '-')}</td>
+        <td>${formatFileSize(s.file_size)}</td>
+        <td>${formatWpTime(s.created_at)}</td>
+        <td>
+          <button class="btn-sm wp-download-btn"
+                  data-path="${escHtml(s.file_path)}"
+                  data-filename="${escHtml(s.file_name || s.company_name + '.pptx')}">다운로드</button>
+          <button class="btn-sm wp-delete-btn"
+                  data-id="${escHtml(s.id)}"
+                  data-path="${escHtml(s.file_path)}"
+                  data-company="${escHtml(s.company_name)}">삭제</button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:#b91c1c;">오류: ${escHtml(err.message)}</td></tr>`;
+  }
+}
+
+async function downloadSingleWp(path, filename) {
+  try {
+    const blob = await downloadWpBlob(path);
+    triggerDownload(blob, filename);
+  } catch (err) {
+    showToast('다운로드 실패: ' + err.message);
+  }
+}
+
+async function downloadWpZip() {
+  if (!wpCurrentWeek) { showToast('주차를 선택해주세요.'); return; }
+  const btn = document.getElementById('wp-download-zip');
+  const origText = btn.textContent;
+  btn.disabled = true;
+
+  try {
+    const subs = await getWpSubmissions(wpCurrentWeek);
+    if (subs.length === 0) { showToast('제출된 자료가 없습니다.', 'info'); btn.disabled = false; btn.textContent = origText; return; }
+
+    const zip = new JSZip();
+    for (let i = 0; i < subs.length; i++) {
+      const s = subs[i];
+      btn.textContent = `다운로드 중... ${i+1}/${subs.length}`;
+      const blob = await downloadWpBlob(s.file_path);
+      const ext = (s.file_name && s.file_name.split('.').pop()) || 'pptx';
+      // zip 내부 파일명: 순번_회사명.pptx (발표 순서 확인 편의)
+      const safeCompany = s.company_name.replace(/[\/\\?%*:|"<>]/g, '_');
+      const zipName = `${String(i+1).padStart(2,'0')}_${safeCompany}.${ext}`;
+      zip.file(zipName, blob);
+    }
+
+    btn.textContent = 'ZIP 생성 중...';
+    const content = await zip.generateAsync({ type: 'blob' }, (meta) => {
+      btn.textContent = `ZIP 생성 중... ${Math.round(meta.percent)}%`;
+    });
+    triggerDownload(content, `WP_${wpCurrentWeek}.zip`);
+    showToast(`${subs.length}개 파일 ZIP 다운로드 완료`, 'success');
+  } catch (err) {
+    showToast('ZIP 다운로드 실패: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function formatFileSize(bytes) {
+  if (!bytes) return '-';
+  if (bytes < 1024) return bytes + 'B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + 'KB';
+  return (bytes/1024/1024).toFixed(1) + 'MB';
+}
+
+function formatWpTime(iso) {
+  if (!iso) return '-';
+  const d = new Date(iso);
+  return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
 
 

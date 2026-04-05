@@ -62,6 +62,37 @@
  * -- Allow public read on members, schedule, settings
  * -- Allow public insert on applications
  * -- Allow authenticated users full access to all tables
+ *
+ * === WP (Weekly Presentation) Upload Setup ===
+ *
+ * -- wp_submissions table
+ * CREATE TABLE wp_submissions (
+ *   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+ *   week_date date NOT NULL,                 -- 해당 주차 금요일
+ *   company_name text NOT NULL,              -- members.company_name 과 매칭
+ *   file_path text NOT NULL,                 -- wp-uploads 버킷 내 경로
+ *   file_name text,                          -- 원본 파일명
+ *   file_size bigint,
+ *   created_at timestamptz DEFAULT now(),
+ *   UNIQUE(week_date, company_name)
+ * );
+ *
+ * -- Storage bucket: wp-uploads (public = false)
+ * -- Path convention: {week_date}/{company_name}.pptx
+ *
+ * -- RLS for wp_submissions
+ * ALTER TABLE wp_submissions ENABLE ROW LEVEL SECURITY;
+ * CREATE POLICY "public select wp" ON wp_submissions FOR SELECT USING (true);
+ * CREATE POLICY "public insert wp" ON wp_submissions FOR INSERT WITH CHECK (true);
+ * CREATE POLICY "public update wp"  ON wp_submissions FOR UPDATE USING (true) WITH CHECK (true);
+ * CREATE POLICY "auth delete wp"    ON wp_submissions FOR DELETE USING (auth.role() = 'authenticated');
+ *
+ * -- Storage policies for wp-uploads bucket
+ * -- (Create via Dashboard → Storage → wp-uploads → Policies)
+ *   1) anon INSERT  (bucket_id = 'wp-uploads')
+ *   2) anon UPDATE  (bucket_id = 'wp-uploads')         ← 재업로드 덮어쓰기용
+ *   3) anon SELECT  (bucket_id = 'wp-uploads')         ← signed URL 발급용
+ *   4) authenticated ALL (bucket_id = 'wp-uploads')    ← 관리자 다운로드/삭제
  */
 
 const SUPABASE_URL = 'https://dzzjlycqxfqdyqgnqixh.supabase.co';
@@ -226,6 +257,108 @@ async function getNextOfflineMeeting(fromDate) {
 
 function _fmt(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ── WP (Weekly Presentation) ─────────────────────────────────────────────────
+
+const WP_BUCKET = 'wp-uploads';
+
+/**
+ * 다음 금요일 날짜 (YYYY-MM-DD). 오늘이 금요일이면 오늘.
+ */
+function getNextFriday(baseDate) {
+  const d = baseDate ? new Date(baseDate) : new Date();
+  const day = d.getDay();                   // 0=Sun .. 5=Fri .. 6=Sat
+  const delta = (5 - day + 7) % 7;          // 다음 금요일까지 일수
+  d.setDate(d.getDate() + delta);
+  return _fmt(d);
+}
+
+/**
+ * 업로드 마감 여부. 금요일 주의 수요일 12:00(KST) 이후면 true.
+ * weekDate: 해당 주 금요일 YYYY-MM-DD
+ */
+function isWpUploadClosed(weekDate, now) {
+  const fri = new Date(weekDate + 'T00:00:00+09:00');
+  const wedNoon = new Date(fri);
+  wedNoon.setDate(fri.getDate() - 2);       // 금 - 2 = 수
+  wedNoon.setHours(12, 0, 0, 0);            // 로컬 타임존 기준. KST 가정.
+  const cur = now || new Date();
+  return cur >= wedNoon;
+}
+
+async function uploadWpFile(file, weekDate, companyName) {
+  // 확장자 추출 (pptx 외에도 케이스 대응)
+  const ext = (file.name.split('.').pop() || 'pptx').toLowerCase();
+  // 한글 파일명을 경로에 쓰면 깨질 수 있어서 안전한 파일명 구성
+  const safeCompany = companyName.replace(/[\/\\?%*:|"<>]/g, '_');
+  const path = `${weekDate}/${safeCompany}.${ext}`;
+
+  const { error: upErr } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .upload(path, file, { upsert: true, contentType: file.type || undefined });
+  if (upErr) throw upErr;
+
+  const record = {
+    week_date: weekDate,
+    company_name: companyName,
+    file_path: path,
+    file_name: file.name,
+    file_size: file.size,
+  };
+  const { error: dbErr } = await supabaseClient
+    .from('wp_submissions')
+    .upsert(record, { onConflict: 'week_date,company_name' });
+  if (dbErr) throw dbErr;
+
+  return record;
+}
+
+async function getWpSubmissions(weekDate) {
+  const { data, error } = await supabaseClient
+    .from('wp_submissions')
+    .select('*')
+    .eq('week_date', weekDate)
+    .order('created_at', { ascending: true });
+  if (error) { console.error('getWpSubmissions error:', error); return []; }
+  return data || [];
+}
+
+async function getWpWeekDates() {
+  const { data, error } = await supabaseClient
+    .from('wp_submissions')
+    .select('week_date')
+    .order('week_date', { ascending: false });
+  if (error) { console.error('getWpWeekDates error:', error); return []; }
+  const set = new Set((data || []).map(r => r.week_date));
+  return Array.from(set);
+}
+
+async function getWpDownloadUrl(filePath) {
+  // 1시간짜리 signed URL
+  const { data, error } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .createSignedUrl(filePath, 3600);
+  if (error) throw error;
+  return data.signedUrl;
+}
+
+async function downloadWpBlob(filePath) {
+  const { data, error } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .download(filePath);
+  if (error) throw error;
+  return data;  // Blob
+}
+
+async function deleteWpSubmission(id, filePath) {
+  // 스토리지 파일 먼저 삭제
+  const { error: stErr } = await supabaseClient.storage
+    .from(WP_BUCKET)
+    .remove([filePath]);
+  if (stErr) console.warn('storage remove warn:', stErr);
+  const { error } = await supabaseClient.from('wp_submissions').delete().eq('id', id);
+  if (error) throw error;
 }
 
 // ── Applications update ───────────────────────────────────────────────────────
