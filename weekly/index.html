@@ -272,7 +272,7 @@
         <div class="big">이번 주 제출 마감</div>
         <div class="small">
           제출은 <b>회의 2일 전 낮 12시</b>에 마감됩니다.<br/>
-          다음 회의 자료는 이번 모임 이후부터 올려주세요.
+          <span id="next-open-text"></span>
         </div>
       </div>
     </div>
@@ -317,6 +317,8 @@
       if (forceClosed || isWpUploadClosed(currentWeek)) {
         document.getElementById('upload-card').style.display = 'none';
         document.getElementById('closed-card').style.display = 'block';
+        document.getElementById('next-open-text').textContent =
+          `다음 주 자료는 ${formatNextOpen(currentWeek)}부터 올릴 수 있습니다.`;
       } else {
         initForm();
       }
@@ -338,6 +340,13 @@
       const d = new Date(dateStr + 'T00:00:00');
       d.setDate(d.getDate() - 2);
       return `${d.getMonth()+1}월 ${d.getDate()}일 (${DOW[d.getDay()]}) 낮 12시`;
+    }
+
+    function formatNextOpen(weekDate) {
+      // 회의일 다음날 (토요일)부터 다음 주 자료 업로드 가능
+      const d = new Date(weekDate + 'T00:00:00');
+      d.setDate(d.getDate() + 1);
+      return `${d.getMonth()+1}월 ${d.getDate()}일 (${DOW[d.getDay()]})`;
     }
 
     let membersCache = [];
