@@ -578,11 +578,8 @@ async function loadWpTab() {
     }
   });
 
-  // 초기 선택
-  if (select.options.length > 0) {
-    wpCurrentWeek = select.value;
-    await renderWpTable();
-  }
+  // 초기 렌더
+  if (wpCurrentWeek) await renderWpTable();
 }
 
 async function populateWpWeekSelect() {
@@ -614,6 +611,8 @@ async function populateWpWeekSelect() {
   } else {
     select.value = nextMeeting;
   }
+  // wpCurrentWeek 동기화 (select.value 변경은 change 이벤트 trigger 안 함)
+  wpCurrentWeek = select.value;
 }
 
 async function renderWpTable() {

@@ -357,15 +357,6 @@ async function getWpWeekDates() {
   return Array.from(set);
 }
 
-async function getWpDownloadUrl(filePath) {
-  // 1시간짜리 signed URL
-  const { data, error } = await supabaseClient.storage
-    .from(WP_BUCKET)
-    .createSignedUrl(filePath, 3600);
-  if (error) throw error;
-  return data.signedUrl;
-}
-
 async function downloadWpBlob(filePath) {
   const { data, error } = await supabaseClient.storage
     .from(WP_BUCKET)

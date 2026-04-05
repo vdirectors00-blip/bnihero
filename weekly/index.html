@@ -321,8 +321,9 @@
         initForm();
       }
 
-      await loadMembers();
+      // 제출목록 먼저 로드해서 드롭다운 ✓ 표시에 플래시 없게
       await loadSubmissions();
+      await loadMembers();
     });
 
     const DOW = ['일','월','화','수','목','금','토'];
@@ -339,19 +340,30 @@
       return `${d.getMonth()+1}월 ${d.getDate()}일 (${DOW[d.getDay()]}) 낮 12시`;
     }
 
+    let membersCache = [];
+
     async function loadMembers() {
       try {
-        const members = await getMembers();
-        const select = document.getElementById('company');
-        members.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.company_name;
-          opt.textContent = m.company_name;
-          select.appendChild(opt);
-        });
+        membersCache = await getMembers();
+        renderCompanyOptions();
       } catch (e) {
         console.error(e);
       }
+    }
+
+    function renderCompanyOptions() {
+      const select = document.getElementById('company');
+      const prevValue = select.value;
+      // 첫 옵션(선택해주세요)만 남기고 나머지 제거
+      while (select.options.length > 1) select.remove(1);
+      membersCache.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.company_name;
+        const submitted = submittedCompanies.has(m.company_name);
+        opt.textContent = submitted ? `${m.company_name} ✓ 제출완료` : m.company_name;
+        select.appendChild(opt);
+      });
+      if (prevValue) select.value = prevValue;
     }
 
     async function loadSubmissions() {
@@ -360,6 +372,8 @@
       try {
         const subs = await getWpSubmissions(currentWeek);
         submittedCompanies = new Set(subs.map(s => s.company_name));
+        // 드롭다운 다시 렌더 (제출 완료 표시 갱신)
+        if (membersCache.length) renderCompanyOptions();
         countEl.textContent = subs.length > 0 ? `(${subs.length}명)` : '';
         if (subs.length === 0) {
           list.innerHTML = '<li class="empty">아직 제출한 분이 없습니다</li>';
@@ -490,10 +504,14 @@
       });
     }
 
+    let msgHideTimer = null;
     function showMsg(type, text) {
       const el = document.getElementById('msg');
       el.className = 'msg ' + type;
       el.textContent = text;
+      if (msgHideTimer) { clearTimeout(msgHideTimer); msgHideTimer = null; }
+      // 성공 메시지는 7초 후 자동 숨김
+      if (type === 'ok') msgHideTimer = setTimeout(hideMsg, 7000);
     }
     function hideMsg() {
       document.getElementById('msg').className = 'msg hidden';
