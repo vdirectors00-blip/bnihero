@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 — BNI 히어로챕터</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Pretendard Font -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <!-- Admin CSS -->
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+  Login Screen
+════════════════════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <p class="login-logo">BNI 히어로챕터</p>
+    <p class="login-sub">관리자 로그인</p>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label for="login-pw">비밀번호</label>
+        <input type="password" id="login-pw" placeholder="비밀번호를 입력해주세요" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn-login">로그인</button>
+      <p id="login-error" aria-live="polite"></p>
+    </form>
+
+    <p style="margin-top:20px;"><a href="/" style="font-size:0.82rem;color:#aaa;">← 홈으로 돌아가기</a></p>
+    <p style="margin-top:8px;font-size:0.78rem;color:#aaa;">bnihero.kr/admin</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Dashboard Screen
+════════════════════════════════════════════════════════════ -->
+<div id="dashboard-screen">
+
+  <!-- Top Bar -->
+  <header class="admin-topbar">
+    <span class="admin-topbar-title">BNI 히어로챕터 — 관리자</span>
+    <a href="/" style="color:rgba(255,255,255,0.7);font-size:0.82rem;margin-right:16px;">사이트 보기 →</a>
+    <button id="logout-btn" class="btn-logout">로그아웃</button>
+  </header>
+
+  <div class="admin-layout">
+
+    <!-- Tabs -->
+    <div class="admin-tabs" role="tablist" aria-label="관리 탭">
+      <button class="admin-tab-btn active" data-tab="tab-members"  role="tab" aria-selected="true"  aria-controls="tab-members">멤버 관리</button>
+      <button class="admin-tab-btn"        data-tab="tab-schedule" role="tab" aria-selected="false" aria-controls="tab-schedule">일정 관리</button>
+      <button class="admin-tab-btn"        data-tab="tab-apps"     role="tab" aria-selected="false" aria-controls="tab-apps">신청 목록</button>
+      <button class="admin-tab-btn"        data-tab="tab-wp"       role="tab" aria-selected="false" aria-controls="tab-wp">WP 취합</button>
+      <button class="admin-tab-btn"        data-tab="tab-settings" role="tab" aria-selected="false" aria-controls="tab-settings">사이트 설정</button>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────
+      Tab 1: 멤버 관리
+    ──────────────────────────────────────────────────── -->
+    <div id="tab-members" class="admin-tab-panel active" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">멤버 목록</h2>
+          <button id="member-add-btn" class="btn-add">+ 멤버 추가</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>회사명</th>
+                <th>전문분야</th>
+                <th>명함</th>
+                <th>홈페이지</th>
+                <th>순서</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="members-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">불러오는 중…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────
+      Tab 2: 일정 관리
+    ──────────────────────────────────────────────────── -->
+    <div id="tab-schedule" class="admin-tab-panel" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">일정 관리</h2>
+        </div>
+        <p style="font-size:0.88rem;color:#888;margin-bottom:16px;">금요일 셀을 클릭하면 일정 유형을 설정할 수 있습니다.</p>
+
+        <div class="cal-nav" role="group" aria-label="월 이동">
+          <button id="admin-cal-prev" aria-label="이전 달">&#8592;</button>
+          <span id="admin-cal-title" aria-live="polite"></span>
+          <button id="admin-cal-next" aria-label="다음 달">&#8594;</button>
+        </div>
+
+        <div id="admin-cal-grid" class="admin-cal-grid" aria-label="월별 일정 관리"></div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────
+      Tab 3: 신청 목록
+    ──────────────────────────────────────────────────── -->
+    <div id="tab-apps" class="admin-tab-panel" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">참관 신청 목록</h2>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>신청일</th>
+                <th>회사명</th>
+                <th>성함</th>
+                <th>직책</th>
+                <th>연락처</th>
+                <th>참관 예정일</th>
+                <th>상태</th>
+                <th>비고</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="applications-tbody">
+              <tr><td colspan="9" style="text-align:center;padding:24px;color:#aaa;">불러오는 중…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="apps-pagination">
+          <button id="apps-prev" class="btn-page" disabled>← 이전</button>
+          <span id="apps-page-info"></span>
+          <button id="apps-next" class="btn-page">다음 →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────
+      Tab: WP 취합
+    ──────────────────────────────────────────────────── -->
+    <div id="tab-wp" class="admin-tab-panel" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">위클리 프레젠테이션 취합</h2>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;">
+          <label for="wp-week-select" style="font-size:0.9rem;color:#555;font-weight:600;">주차 선택:</label>
+          <select id="wp-week-select" style="padding:8px 12px;font-size:0.95rem;border:1px solid #ccc;border-radius:6px;min-width:180px;"></select>
+          <button id="wp-refresh-btn" class="btn-sm" style="padding:8px 14px;">새로고침</button>
+          <button id="wp-download-zip" class="btn-add" style="margin-left:auto;">전체 다운로드 (ZIP)</button>
+          <button id="wp-purge-week" class="btn-sm" style="padding:8px 14px;background:#b91c1c;color:#fff;border-color:#b91c1c;">이 주차 전체 삭제</button>
+        </div>
+
+        <p style="font-size:0.85rem;color:#888;margin-bottom:8px;">
+          공개 제출 링크: <a href="/weekly/" target="_blank" style="color:#2D2B6F;">https://bnihero.kr/weekly/</a>
+        </p>
+
+        <!-- 용량 현황 -->
+        <div id="wp-usage-box" style="background:#f4f6fb;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:0.88rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span><strong>WP 자료 용량</strong> <span id="wp-usage-text" style="color:#555;">계산 중...</span></span>
+            <span id="wp-usage-pct" style="font-weight:700;">-</span>
+          </div>
+          <div style="background:#e4e6f0;height:10px;border-radius:999px;overflow:hidden;">
+            <div id="wp-usage-bar" style="height:100%;background:#2a7a4b;width:0%;transition:width 0.3s;"></div>
+          </div>
+          <p style="color:#666;margin-top:8px;font-size:0.82rem;line-height:1.5;">
+            ※ 용량 한도 1GB는 명함·이미지 등 다른 자료와 공유 (현재 기타 자료 약 20MB).<br/>
+            4주 이상 지난 주차는 자동 삭제. 취합 끝나면 [이 주차 전체 삭제]로 즉시 정리 권장.
+          </p>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>순번</th>
+                <th>회사명</th>
+                <th>파일명</th>
+                <th>크기</th>
+                <th>제출시각</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="wp-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">주차를 선택해주세요.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────────
+      Tab 4: 사이트 설정
+    ──────────────────────────────────────────────────── -->
+    <div id="tab-settings" class="admin-tab-panel" role="tabpanel">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">사이트 설정</h2>
+        </div>
+
+        <form id="settings-form">
+
+          <p class="settings-section-title">통계 수치</p>
+
+          <div class="settings-group">
+            <label for="setting-referral-count">리퍼럴 건수</label>
+            <input type="number" id="setting-referral-count" placeholder="예: 6500" min="0" />
+          </div>
+          <div class="settings-group">
+            <label for="setting-visitor-count">비지터 수</label>
+            <input type="number" id="setting-visitor-count" placeholder="예: 500" min="0" />
+          </div>
+          <div class="settings-group">
+            <label for="setting-business-amount">비즈니스 총액 (억원)</label>
+            <input type="number" id="setting-business-amount" placeholder="예: 70" min="0" />
+          </div>
+
+          <p class="settings-section-title">연락처 정보</p>
+
+          <div class="settings-group">
+            <label for="setting-contact-phone">전화번호</label>
+            <input type="text" id="setting-contact-phone" placeholder="예: 032-000-0000" />
+          </div>
+          <div class="settings-group">
+            <label for="setting-contact-email">이메일</label>
+            <input type="email" id="setting-contact-email" placeholder="예: hero@bnihero.kr" />
+          </div>
+          <div class="settings-group">
+            <label for="setting-contact-kakao">카카오톡 ID / 오픈채팅 링크</label>
+            <input type="text" id="setting-contact-kakao" placeholder="예: bnihero 또는 오픈채팅 URL" />
+          </div>
+          <div class="settings-group">
+            <label for="setting-contact-instagram">인스타그램 URL</label>
+            <input type="url" id="setting-contact-instagram" placeholder="예: https://www.instagram.com/bni_hero.ct/" />
+          </div>
+
+          <button type="submit" class="btn-settings-save">저장하기</button>
+          <span id="settings-msg" aria-live="polite"></span>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- /.admin-layout -->
+</div><!-- /#dashboard-screen -->
+
+<!-- ══════════════════════════════════════════════════════════
+  Member Add/Edit Modal
+════════════════════════════════════════════════════════════ -->
+<div id="member-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="member-modal-title">
+  <div class="admin-modal-box">
+    <button id="member-modal-close" class="admin-modal-close" aria-label="닫기">&times;</button>
+    <h3 class="admin-modal-title" id="member-modal-title">멤버 추가</h3>
+
+    <form id="member-form">
+      <div class="modal-form-group">
+        <label for="m-company">회사명 <span style="color:#e74c3c;">*</span></label>
+        <input type="text" id="m-company" placeholder="회사명" required />
+      </div>
+      <div class="modal-form-group">
+        <label for="m-specialty">전문분야</label>
+        <input type="text" id="m-specialty" placeholder="예) IT, 법률, 부동산" />
+      </div>
+      <div class="modal-form-group">
+        <label for="m-website">홈페이지 URL</label>
+        <input type="url" id="m-website" placeholder="https://example.com" />
+      </div>
+      <div class="modal-form-group">
+        <label for="m-order">정렬 순서</label>
+        <input type="number" id="m-order" min="0" placeholder="0" />
+      </div>
+      <div class="modal-form-group">
+        <label for="m-card-file">명함 이미지</label>
+        <input type="file" id="m-card-file" accept="image/*" />
+        <img id="member-card-preview" class="modal-card-preview" src="" alt="명함 미리보기" style="display:none;" />
+      </div>
+      <button type="submit" class="btn-modal-submit">저장하기</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Schedule Edit Modal
+════════════════════════════════════════════════════════════ -->
+<div id="schedule-modal" class="admin-modal" role="dialog" aria-modal="true" aria-labelledby="schedule-modal-title">
+  <div class="admin-modal-box">
+    <button id="schedule-modal-close" class="admin-modal-close" aria-label="닫기">&times;</button>
+    <h3 class="admin-modal-title" id="schedule-modal-title">일정 설정</h3>
+
+    <form id="schedule-form">
+      <div class="modal-form-group">
+        <label>날짜</label>
+        <p id="sched-date-display" style="font-weight:700;font-size:1rem;color:#2D2B6F;"></p>
+        <input type="hidden" id="sched-date-val" />
+        <input type="hidden" id="sched-id" />
+      </div>
+      <div class="modal-form-group">
+        <label for="sched-type">모임 유형</label>
+        <select id="sched-type">
+          <option value="offline">오프라인 (조찬회의)</option>
+          <option value="online">온라인 (화상회의)</option>
+          <option value="cancelled">회의없음</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label for="sched-note">메모 (선택 — 휴회 등 특이사항)</label>
+        <textarea id="sched-note" placeholder="예) 휴회, 특별 행사 등"></textarea>
+      </div>
+      <button type="submit" class="btn-modal-submit">저장하기</button>
+    </form>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+  Scripts
+════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="/js/supabase-client.js"></script>
+<script src="/js/admin.js"></script>
+
+</body>
+</html>
