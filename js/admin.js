@@ -578,6 +578,12 @@ async function loadWpTab() {
     }
   });
 
+  // 탭 재진입 시 자동 새로고침
+  document.querySelector('[data-tab="tab-wp"]')?.addEventListener('click', async () => {
+    await populateWpWeekSelect();
+    await renderWpTable();
+  });
+
   // 초기 렌더
   if (wpCurrentWeek) await renderWpTable();
 }
