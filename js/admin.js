@@ -471,7 +471,7 @@ function renderApplicationsTable(apps) {
   tbody.innerHTML = '';
 
   if (apps.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#888;">신청 내역이 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:#888;">신청 내역이 없습니다.</td></tr>';
     return;
   }
 
@@ -487,6 +487,7 @@ function renderApplicationsTable(apps) {
       <td>${escHtml(a.name || '')}</td>
       <td>${escHtml(a.position || '')}</td>
       <td>${escHtml(a.phone || '')}</td>
+      <td>${escHtml(a.business_field || '')}</td>
       <td>${visitDate}</td>
       <td>
         <span class="app-badge ${confirmed ? 'app-badge-confirmed' : 'app-badge-pending'} app-badge-toggle"
