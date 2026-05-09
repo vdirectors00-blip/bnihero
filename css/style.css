@@ -381,7 +381,9 @@ section {
 .hero__heading > .word:nth-child(1) { animation-delay: 0.4s; }
 .hero__heading > .word:nth-child(2) { animation-delay: 0.5s; }
 .hero__heading > .word:nth-child(3) { animation-delay: 0.6s; }
-.hero__heading > .word:nth-child(4) { animation-delay: 0.85s; }
+/* :nth-child(4) = .br element, skipped */
+.hero__heading > .word:nth-child(5),
+.hero__heading .accent { animation-delay: 0.85s; }
 .hero__sub { animation-delay: 1.3s; }
 .hero__cta { animation-delay: 1.55s; }
 @keyframes heroFadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -423,21 +425,30 @@ section {
 .hero__heading > .word { display: inline-block; will-change: transform, opacity; }
 .hero__heading .br { display: block; height: 0; }
 
-/* ② 강조어 그라디언트 흐름 + ③ underline draw */
+/* ② 강조어 — Shimmer Sweep (한 번만 좌→우 빛 통과) + 정적 골드↔시안 그라디언트 */
 .hero__heading .accent {
-  background: linear-gradient(92deg, #E5C77B 0%, #7AD4FF 50%, #E5C77B 100%);
-  background-size: 200% 100%;
+  background:
+    linear-gradient(105deg,
+      transparent 35%,
+      rgba(255,255,255,0.92) 50%,
+      transparent 65%
+    ) -100% 0 / 200% 100% no-repeat,
+    linear-gradient(92deg, #E5C77B 0%, #7AD4FF 100%);
+  background-size: 200% 100%, 100% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   font-weight: 900;
-  animation: heroGradFlow 6s ease-in-out infinite, heroFadeUp 0.7s cubic-bezier(.2,.7,.2,1) forwards;
+  animation: heroShimmer 1.4s 1.5s cubic-bezier(.4, 0, .2, 1) forwards,
+             heroFadeUp 0.7s cubic-bezier(.2,.7,.2,1) forwards;
   position: relative;
 }
-@keyframes heroGradFlow {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes heroShimmer {
+  0%   { background-position: -100% 0, 0 0; }
+  100% { background-position: 200% 0, 0 0; }
 }
+
+/* ③ underline draw (그대로 유지) */
 .hero__heading .accent-underline { position: relative; display: inline-block; }
 .hero__heading .accent-underline::after {
   content: '';
@@ -446,7 +457,7 @@ section {
   background: linear-gradient(90deg, #E5C77B, #7AD4FF);
   transform: scaleX(0);
   transform-origin: left center;
-  animation: heroUnderDraw 0.9s 1.5s cubic-bezier(.2,.7,.2,1) forwards;
+  animation: heroUnderDraw 0.9s 1.7s cubic-bezier(.2,.7,.2,1) forwards;
 }
 @keyframes heroUnderDraw { to { transform: scaleX(1); } }
 
@@ -478,22 +489,66 @@ section {
   .hero__eyebrow, .hero__heading > .word, .hero__sub, .hero__cta {
     opacity: 1; transform: none; animation: none;
   }
-  .hero__heading .accent { animation: none; background-position: 50% 50%; }
+  .hero__heading .accent { animation: none; background-position: 200% 0, 0 0; }
   .hero__heading .accent-underline::after { transform: scaleX(1); animation: none; }
   .hero__eyebrow::before { animation: none; }
 }
 
+/* === 반응형 강화 === */
+@media (max-width: 1280px) {
+  .hero__heading { max-width: 20ch; }
+  .hero__inner { padding: 0 28px 88px; }
+}
+
+@media (max-width: 1024px) {
+  .hero__heading { font-size: clamp(2.6rem, 7vw, 5rem); max-width: 22ch; }
+  .hero__inner { padding: 0 28px 80px; }
+}
+
 @media (max-width: 768px) {
-  .hero { min-height: 88vh; }
-  .hero__inner { padding: 0 24px 72px; }
-  .hero__eyebrow { margin-bottom: 24px; }
-  .hero__heading { margin-bottom: 28px; line-height: 1.16; }
-  .hero__sub { margin-bottom: 36px; }
-  .hero__cta { width: 100%; justify-content: center; }
+  .hero { min-height: 86vh; }
+  .hero__inner { padding: 0 24px 64px; }
+  .hero__eyebrow { margin-bottom: 22px; font-size: 0.95rem; letter-spacing: 0.12em; }
+  .hero__heading {
+    font-size: clamp(2.2rem, 8.4vw, 3.6rem);
+    line-height: 1.16;
+    margin-bottom: 26px;
+    max-width: 100%;
+  }
+  .hero__sub {
+    font-size: 0.96rem;
+    margin-bottom: 30px;
+    line-height: 1.55;
+  }
+  .hero__cta {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 24px;
+    font-size: 0.96rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .hero { min-height: 82vh; }
+  .hero__inner { padding: 0 20px 56px; }
+  .hero__eyebrow { font-size: 0.86rem; letter-spacing: 0.1em; margin-bottom: 18px; }
+  .hero__heading {
+    font-size: clamp(1.95rem, 9vw, 2.8rem);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin-bottom: 22px;
+  }
+  .hero__sub { font-size: 0.9rem; margin-bottom: 26px; letter-spacing: 0.01em; }
+  .hero__cta { padding: 13px 20px; font-size: 0.92rem; }
   .hero__bg img { object-position: 60% 50%; }
+  .hero__heading .accent-underline::after { bottom: -5px; height: 1.5px; }
+}
+
+@media (max-width: 360px) {
+  .hero { min-height: 78vh; }
+  .hero__heading { font-size: 1.85rem; line-height: 1.2; }
+  .hero__sub { font-size: 0.85rem; }
+  .hero__inner { padding: 0 18px 48px; }
 }
 
 .pain-text {
@@ -1545,6 +1600,55 @@ section {
 
 @media (prefers-reduced-motion: reduce) {
   .apply-page-title strong { animation: none; background-position: 50% 50%; }
+}
+
+/* === Apply 헤더 반응형 강화 === */
+@media (max-width: 1024px) {
+  .apply-page-header { padding: 100px 0 80px; }
+  .apply-page-title { font-size: clamp(2.2rem, 5.4vw, 3.8rem); }
+}
+
+@media (max-width: 768px) {
+  .apply-page-header { padding: 88px 0 72px; }
+  .apply-page-title { font-size: clamp(2rem, 7.2vw, 2.8rem); line-height: 1.18; }
+  .apply-page-eyebrow { font-size: 0.82rem; letter-spacing: 0.18em; margin-bottom: 20px; }
+  .apply-page-rule { margin-bottom: 22px; }
+  .apply-page-invite { font-size: 1.05rem; letter-spacing: 0.22em; margin-bottom: 22px; }
+  .apply-page-meta { gap: 14px; font-size: 0.95rem; }
+  .apply-page-meta-item { font-size: 0.92rem; }
+}
+
+@media (max-width: 480px) {
+  .apply-page-header { padding: 72px 0 56px; }
+  .apply-page-title {
+    font-size: 1.85rem;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .apply-page-eyebrow {
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 16px;
+  }
+  .apply-page-invite {
+    font-size: 0.94rem;
+    letter-spacing: 0.18em;
+    margin-bottom: 20px;
+  }
+  .apply-page-rule { width: 36px; margin-bottom: 18px; }
+  .apply-page-rule-accent { width: 26px; margin-bottom: 18px; }
+  .apply-page-meta {
+    gap: 6px;
+    flex-direction: column;
+  }
+  .apply-page-meta-div { display: none; }
+  .apply-page-meta-item { font-size: 0.86rem; }
+  .apply-page-header__bg img { object-position: 60% 50%; }
+}
+
+@media (max-width: 360px) {
+  .apply-page-header { padding: 60px 0 48px; }
+  .apply-page-title { font-size: 1.65rem; }
 }
 
 @media (max-width: 480px) {
