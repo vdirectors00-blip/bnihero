@@ -150,33 +150,24 @@
   </a>
 </div>
 
-<!-- Section 1: Hero Video — 임시 비활성화 (Vimeo Basic 외부 임베드 차단)
-<section id="hero" aria-label="히어로 영상">
-  <div class="video-wrapper">
-    <iframe
-      src="https://player.vimeo.com/video/1087870619?autoplay=1&loop=1&muted=1&background=1&quality=1080p"
-      allow="autoplay; fullscreen; picture-in-picture"
-      allowfullscreen
-      title="BNI 히어로챕터 소개 영상">
-    </iframe>
-  </div>
-</section>
--->
-<!-- intro-cta가 첫 섹션이 되도록 hero를 비활성화. 복원 시 위 주석 해제 + style.css 의 .intro-cta-section margin-top 제거 -->
-
 <!-- ══════════════════════════════════════════════════════════
-  Section 1-b: 인트로 CTA (영상 바로 아래)
+  Section 1: Hero — 송도 야경 + 매거진 톤 카피
 ════════════════════════════════════════════════════════════ -->
-<section id="intro-cta" class="intro-cta-section">
-  <div class="container">
-    <div class="intro-cta-inner">
-      <p class="intro-eyebrow">Ready for Real Business Growth?</p>
-      <h2 class="intro-heading">Become a BNI Hero.</h2>
-      <p class="intro-desc">
-        <strong>BNI 히어로챕터</strong>는 성공을 설계하는<br />
-        <strong>CEO들이 모이는</strong> 비즈니스 네트워킹 그룹입니다.
-      </p>
-    </div>
+<section id="hero" class="hero" aria-labelledby="hero-heading">
+  <picture class="hero__bg">
+    <img src="img/hero/songdo-central-park-night.jpg"
+         alt="인천 송도 센트럴파크 야경"
+         loading="eager"
+         fetchpriority="high" />
+  </picture>
+  <div class="hero__inner">
+    <p class="hero__eyebrow">BNI 히어로챕터 · 인천 송도</p>
+    <h1 class="hero__heading" id="hero-heading">
+      당신이 만나야 할 사람들이,<br />
+      매주 금요일 송도에 있습니다.
+    </h1>
+    <p class="hero__sub">참관 한 번이면 충분합니다.</p>
+    <a href="/apply/" class="hero__cta">참관 신청하기 <span aria-hidden="true">→</span></a>
   </div>
 </section>
 
@@ -582,6 +573,7 @@
   <div class="footer-inner">
     <span class="footer-logo">BNI 히어로챕터</span>
     <span class="footer-copy">&copy; <span id="footer-year"></span> BNI 히어로챕터. All rights reserved.</span>
+    <span class="footer-credit">Hero photo: José Carioca / <a href="https://commons.wikimedia.org/wiki/File:Songdo_Central_Park_in_2021_night_view.jpg" target="_blank" rel="noopener">Wikimedia Commons</a> / <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
   </div>
 </footer>
 

@@ -329,81 +329,101 @@ section {
 }
 
 /* ══════════════════════════════════════════════════════════════
- * Section 1-b: Intro CTA (영상 바로 아래)
+ * Section 1: Hero — 송도 야경 + 매거진 톤
  * ══════════════════════════════════════════════════════════════ */
 
-.intro-cta-section {
-  background: #fff;
-  padding: 80px 0 72px;
-  text-align: center;
-  margin-top: 72px; /* hero 영상 비활성화 동안 nav 높이 보정 (영상 복원 시 제거) */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  margin-top: 72px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
+  isolation: isolate;
 }
 
-.intro-cta-inner {
-  max-width: 860px;
+.hero__bg {
+  position: absolute; inset: 0;
+  z-index: -2;
+}
+.hero__bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg,
+      rgba(8,14,28,0.30) 0%,
+      rgba(8,14,28,0.20) 45%,
+      rgba(8,14,28,0.85) 100%);
+}
+
+.hero__inner {
+  max-width: var(--max-w);
+  width: 100%;
   margin: 0 auto;
+  padding: 0 32px 96px;
 }
 
-.intro-eyebrow {
+.hero__eyebrow {
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: none;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 28px;
+}
+
+.hero__heading {
+  font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.32;
+  letter-spacing: -0.015em;
+  color: #fff;
+  margin-bottom: 24px;
+  max-width: 22ch;
+}
+
+.hero__sub {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: rgba(255,255,255,0.78);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.hero__cta {
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-  margin-bottom: 20px;
-}
-
-.intro-eyebrow::after {
-  content: '';
-  display: inline-block;
-  width: 56px;
-  height: 1px;
-  background: var(--text-muted);
-}
-
-.intro-heading {
-  font-size: clamp(2.6rem, 6vw, 4.2rem);
-  font-weight: 900;
-  color: var(--navy);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 32px;
-}
-
-.intro-desc {
-  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
-  color: var(--text);
-  line-height: 1.85;
-}
-
-.intro-desc strong {
-  color: var(--navy);
+  gap: 10px;
+  padding: 16px 32px;
+  background: #fff;
+  color: #2D2B6F;
   font-weight: 700;
+  font-size: 1rem;
+  border-radius: 999px;
+  transition: transform .15s ease, background .2s ease;
 }
+.hero__cta:hover { background: #f0f0f5; transform: translateY(-2px); }
+.hero__cta span { transition: transform .2s ease; }
+.hero__cta:hover span { transform: translateX(4px); }
 
-/* 태블릿 (768px 이하) */
 @media (max-width: 768px) {
-  .intro-cta-section {
-    padding: 60px 0 56px;
-  }
-  .intro-eyebrow::after {
-    width: 36px;
-  }
+  .hero { min-height: 88vh; }
+  .hero__inner { padding: 0 24px 72px; }
+  .hero__eyebrow { margin-bottom: 20px; font-size: 0.82rem; }
+  .hero__heading { margin-bottom: 20px; line-height: 1.3; }
+  .hero__sub { margin-bottom: 32px; }
+  .hero__cta { width: 100%; justify-content: center; }
 }
 
-/* 모바일 (480px 이하) */
 @media (max-width: 480px) {
-  .intro-cta-section {
-    padding: 48px 0 44px;
-  }
-  .intro-heading {
-    letter-spacing: -0.01em;
-  }
-  .intro-eyebrow::after {
-    display: none;
-  }
+  .hero__bg img { object-position: 60% 40%; }
 }
 
 .pain-text {
@@ -1994,6 +2014,17 @@ footer {
 
 .footer-copy {
   font-size: 0.82rem;
+}
+
+.footer-credit {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.01em;
+}
+.footer-credit a {
+  color: rgba(255,255,255,0.75);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ══════════════════════════════════════════════════════════════
