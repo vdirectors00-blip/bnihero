@@ -290,32 +290,6 @@ section {
 }
 
 /* ══════════════════════════════════════════════════════════════
- * Section 1: Hero Video
- * ══════════════════════════════════════════════════════════════ */
-
-#hero {
-  padding: 0;
-  margin-top: 72px;
-  scroll-margin-top: 0;
-  width: 100%;
-  background: #000;
-}
-
-.video-wrapper {
-  position: relative;
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 */
-  overflow: hidden;
-}
-
-.video-wrapper iframe {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border: none;
-}
-
-/* ══════════════════════════════════════════════════════════════
  * Section 2: 히어로챕터 소개
  * ══════════════════════════════════════════════════════════════ */
 
@@ -1703,11 +1677,6 @@ section {
   .apply-page-title { font-size: 1.65rem; }
 }
 
-@media (max-width: 480px) {
-  .apply-page-meta-div { display: none; }
-  .apply-page-meta { flex-direction: column; gap: 8px; }
-}
-
 /* Countdown */
 .apply-countdown {
   background: #fff;
@@ -1884,73 +1853,6 @@ section {
   letter-spacing: -0.02em;
 }
 
-.partner-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 48px;
-}
-
-.partner-tile {
-  background: rgba(96,165,250,0.15);
-  border: 1px solid rgba(96,165,250,0.25);
-  border-radius: 12px;
-  padding: 16px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-height: 80px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.partner-tile:hover {
-  background: rgba(96,165,250,0.25);
-  border-color: rgba(96,165,250,0.45);
-}
-
-.pt-category {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.pt-company {
-  font-size: 0.68rem;
-  color: rgba(255,255,255,0.5);
-  text-align: center;
-  line-height: 1.3;
-}
-
-.partner-tile-center {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  border-color: #3b82f6;
-  box-shadow: 0 0 24px rgba(59,130,246,0.35);
-}
-
-.partner-tile-center .pt-category {
-  font-size: 0.85rem;
-}
-
-.partner-tile-empty {
-  background: rgba(255,255,255,0.04);
-  border-style: dashed;
-  border-color: rgba(255,255,255,0.12);
-}
-
-.partner-tile-empty:hover {
-  background: rgba(255,255,255,0.07);
-}
-
-.pt-plus {
-  font-size: 1.4rem;
-  color: rgba(255,255,255,0.25);
-  font-weight: 300;
-}
-
 .partner-closing-sub {
   font-size: 0.92rem;
   color: rgba(255,255,255,0.55);
@@ -1987,21 +1889,12 @@ section {
 }
 
 @media (max-width: 768px) {
-  .apply-page-header { padding: 96px 0 80px; }
   .apply-partner-section { padding: 80px 0 88px; }
   .partner-headline { font-size: clamp(1.6rem, 5.6vw, 2.2rem); line-height: 1.32; }
   .partner-tagline { font-size: clamp(1.6rem, 5.6vw, 2.2rem); }
   .partner-text-rule { margin: 32px auto; }
   .partner-eyebrow { font-size: 0.78rem; letter-spacing: 0.18em; }
   .apply-layout { gap: 24px; }
-  .partner-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
-  .partner-tile { min-height: 68px; padding: 12px 6px; }
-  .pt-category { font-size: 0.72rem; }
-  .pt-company { font-size: 0.62rem; }
-}
-
-@media (max-width: 480px) {
-  .partner-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Apply contact */
@@ -2447,14 +2340,10 @@ footer {
   .meeting-card { padding: 20px 16px; }
 
   /* Apply page */
-  .apply-page-header { padding: 80px 0 64px; }
-  .apply-page-eyebrow { letter-spacing: 0.1em; }
-  .apply-page-invite { letter-spacing: 0.1em; font-size: 1rem; }
   .apply-info-box { padding: 24px 20px; }
   .schedule-banner { height: 220px; }
 
   /* Partner section */
-  .partner-eyebrow { letter-spacing: 0.1em; }
   .apply-partner-section { padding: 64px 0 72px; }
   .partner-headline { font-size: 1.5rem; line-height: 1.34; }
   .partner-tagline { font-size: 1.5rem; }
@@ -2473,7 +2362,5 @@ footer {
   .cd-unit { min-width: 46px; }
   .cd-sep { font-size: 1.6rem; }
   .countdown-date { font-size: 0.9rem; }
-  .apply-page-eyebrow { font-size: 0.78rem; letter-spacing: 0.06em; }
-  .apply-page-invite { font-size: 0.92rem; letter-spacing: 0.06em; }
 }
 
