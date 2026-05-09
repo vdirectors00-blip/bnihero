@@ -224,6 +224,56 @@ section {
 
 .fab-ig[href^="tel"] {
   background: var(--navy);
+  position: relative;
+}
+
+/* 전화 fab — 마우스오버 시 번호 툴팁 슬라이드 */
+.fab-ig[href^="tel"]::before {
+  content: '010-4848-5527';
+  position: absolute;
+  right: calc(100% + 14px);
+  top: 50%;
+  transform: translate(10px, -50%);
+  background: var(--navy);
+  color: #fff;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.fab-ig[href^="tel"]::after {
+  content: '';
+  position: absolute;
+  right: calc(100% + 6px);
+  top: 50%;
+  transform: translate(8px, -50%);
+  border: 6px solid transparent;
+  border-left-color: var(--navy);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.fab-ig[href^="tel"]:hover::before,
+.fab-ig[href^="tel"]:focus-visible::before {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+.fab-ig[href^="tel"]:hover::after,
+.fab-ig[href^="tel"]:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* 터치 디바이스에서는 툴팁 숨김 (탭 시 바로 전화 걸리도록) */
+@media (hover: none) {
+  .fab-ig[href^="tel"]::before,
+  .fab-ig[href^="tel"]::after { display: none; }
 }
 
 .fab-ig[href^="https://www.instagram"] {
