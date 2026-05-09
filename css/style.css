@@ -391,6 +391,7 @@ section {
   align-items: flex-end;
   color: #fff;
   isolation: isolate;
+  background: #0a1426;
 }
 
 .hero__bg { position: absolute; inset: 0; z-index: -2; }
@@ -1535,6 +1536,7 @@ section {
   color: #fff;
   overflow: hidden;
   isolation: isolate;
+  background: #0a1426;
 }
 
 .apply-page-header__bg {
