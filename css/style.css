@@ -1810,8 +1810,7 @@ section {
 
 .apply-partner-section {
   position: relative;
-  background:
-    radial-gradient(ellipse at 50% 30%, #14213d 0%, #0a1426 60%, #050d1a 100%);
+  background: #0c0e14;
   padding: 112px 0 120px;
   text-align: center;
   overflow: hidden;
