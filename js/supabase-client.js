@@ -275,16 +275,16 @@ function getNextFriday(baseDate) {
 }
 
 /**
- * 업로드 마감 여부. 금요일 주의 수요일 12:00(KST) 이후면 true.
+ * 업로드 마감 여부. 금요일 주의 목요일 12:00(KST) 이후면 true.
  * weekDate: 해당 주 금요일 YYYY-MM-DD
  */
 function isWpUploadClosed(weekDate, now) {
   const fri = new Date(weekDate + 'T00:00:00+09:00');
-  const wedNoon = new Date(fri);
-  wedNoon.setDate(fri.getDate() - 2);       // 금 - 2 = 수
-  wedNoon.setHours(12, 0, 0, 0);            // 로컬 타임존 기준. KST 가정.
+  const thuNoon = new Date(fri);
+  thuNoon.setDate(fri.getDate() - 1);       // 금 - 1 = 목
+  thuNoon.setHours(12, 0, 0, 0);            // 로컬 타임존 기준. KST 가정.
   const cur = now || new Date();
-  return cur >= wedNoon;
+  return cur >= thuNoon;
 }
 
 // 한글/괄호 등을 ASCII-safe 키로 변환 (base64url, 결정적 = 같은 입력 → 같은 출력)
