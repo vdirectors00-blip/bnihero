@@ -759,7 +759,7 @@ async function downloadWpZip() {
       const ext = (s.file_name && s.file_name.split('.').pop()) || 'pptx';
       // zip 내부 파일명: 순번_회사명.pptx (발표 순서 확인 편의)
       const safeCompany = s.company_name.replace(/[\/\\?%*:|"<>]/g, '_');
-      const zipName = `${String(i+1).padStart(2,'0')}_${safeCompany}.${ext}`;
+      const zipName = `${i+1}_${safeCompany}.${ext}`;
       zip.file(zipName, blob);
     }
 
