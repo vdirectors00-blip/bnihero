@@ -680,13 +680,27 @@ async function populateWpWeekSelect() {
   wpCurrentWeek = select.value;
 }
 
+// 제출 자료를 경청표(멤버 sort_order) 순서대로 정렬.
+// 멤버 명단에 없는 회사는 맨 뒤로, 그 안에서는 제출 시간순.
+async function sortSubsByListeningOrder(subs) {
+  if (!membersCache.length) membersCache = await getMembers();
+  const orderOf = new Map(membersCache.map(m => [m.company_name, m.sort_order]));
+  const BIG = Number.MAX_SAFE_INTEGER;
+  return [...subs].sort((a, b) => {
+    const oa = orderOf.has(a.company_name) ? orderOf.get(a.company_name) : BIG;
+    const ob = orderOf.has(b.company_name) ? orderOf.get(b.company_name) : BIG;
+    if (oa !== ob) return oa - ob;
+    return (a.created_at || '').localeCompare(b.created_at || '');
+  });
+}
+
 async function renderWpTable() {
   const tbody = document.getElementById('wp-tbody');
   if (!tbody || !wpCurrentWeek) return;
   tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#aaa;">불러오는 중…</td></tr>';
 
   try {
-    const subs = await getWpSubmissions(wpCurrentWeek);
+    const subs = await sortSubsByListeningOrder(await getWpSubmissions(wpCurrentWeek));
     if (subs.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:#888;">제출된 자료가 없습니다.</td></tr>';
       return;
@@ -734,7 +748,7 @@ async function downloadWpZip() {
   if (purgeBtn) purgeBtn.disabled = true;  // ZIP 중 주차삭제 방지
 
   try {
-    const subs = await getWpSubmissions(wpCurrentWeek);
+    const subs = await sortSubsByListeningOrder(await getWpSubmissions(wpCurrentWeek));
     if (subs.length === 0) { showToast('제출된 자료가 없습니다.', 'info'); return; }
 
     const zip = new JSZip();
