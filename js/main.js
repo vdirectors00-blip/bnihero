@@ -4,6 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initNav();
+  initHeroVideo();
+  initHeroSnap();
   initFloatingButtons();
   initStats();
   initCalendar();
@@ -15,6 +17,110 @@ document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
   initCountdown();
 });
+
+/* ── Hero → 첫 섹션 '판 넘김' (그 구간의 휠만 가로채 부드럽게 이동) ──────
+ * CSS scroll-snap 은 가장 가까운 점으로 rubber-band 돼 애매 → 휠 하이재킹으로 딱 떨어지게.
+ * 히어로↔첫섹션 경계에서만 동작하고, 첫 섹션 아래로는 네이티브 자유 스크롤. */
+function initHeroSnap() {
+  const about = document.getElementById('about');
+  if (!about) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let animating = false;
+
+  const aboutTop = () => about.offsetTop - 72;   // 첫 섹션이 네비 아래 딱 붙는 스크롤 위치
+
+  function glideTo(y) {
+    animating = true;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    // 트랙패드 관성 휠을 삼키기 위해 애니메이션 동안 잠금
+    clearTimeout(glideTo._t);
+    glideTo._t = setTimeout(() => { animating = false; }, 750);
+  }
+
+  function onWheel(e) {
+    if (reduce.matches) return;
+    if (animating) { e.preventDefault(); return; }   // 이동 중 관성 무시
+    const y = window.scrollY;
+    const top = aboutTop();
+    const down = e.deltaY > 0;
+    if (down && y < top - 4) {            // 히어로에서 아래로 → 첫 섹션으로 딱
+      e.preventDefault();
+      glideTo(top);
+    } else if (!down && y <= top + 4 && y > 4) {   // 첫 섹션 상단에서 위로 → 히어로로 딱
+      e.preventDefault();
+      glideTo(0);
+    }
+    // 그 외(첫 섹션 아래)는 가로채지 않음 = 자유 스크롤
+  }
+
+  window.addEventListener('wheel', onWheel, { passive: false });
+}
+
+/* ── Hero 홍보영상 (▶ 클릭 재생 → 53초 종료 → 카피 리빌) ────────── */
+function initHeroVideo() {
+  const hero      = document.getElementById('hero');
+  const video     = document.getElementById('hero-video');
+  const playBtn   = document.getElementById('hero-play');
+  const skipBtn   = document.getElementById('hero-skip');
+  const muteBtn   = document.getElementById('hero-mute');
+  const closeBtn  = document.getElementById('hero-close');
+  const replayBtn = document.getElementById('hero-replay');
+  if (!hero || !video || !playBtn) return;
+
+  function setState(state) {
+    hero.classList.remove('hero--intro', 'hero--playing', 'hero--ended');
+    hero.classList.add('hero--' + state);
+  }
+  function updateMuteUI() {
+    muteBtn.classList.toggle('is-muted', video.muted);
+    muteBtn.setAttribute('aria-label', video.muted ? '소리 켜기' : '음소거');
+  }
+
+  function play() {
+    setState('playing');
+    hero.classList.remove('hero--paused');
+    muteBtn.hidden = false;
+    if (closeBtn) closeBtn.hidden = false;
+    replayBtn.hidden = true;
+    video.currentTime = 0;
+    video.muted = false;
+    updateMuteUI();
+    const p = video.play();
+    if (p && p.catch) {
+      // 브라우저가 소리 있는 재생을 막으면 → 음소거로 재생하고 토글로 켜게 안내
+      p.catch(() => {
+        video.muted = true;
+        updateMuteUI();
+        video.play().catch(() => {});
+      });
+    }
+  }
+  function ended() {
+    setState('ended');
+    hero.classList.remove('hero--paused');
+    muteBtn.hidden = true;
+    if (closeBtn) closeBtn.hidden = true;
+    replayBtn.hidden = false;
+    video.pause();
+  }
+  // 영상 클릭 → 일시정지/재생 토글
+  function togglePause() {
+    if (!hero.classList.contains('hero--playing')) return;
+    if (video.paused) { video.play().catch(() => {}); hero.classList.remove('hero--paused'); }
+    else { video.pause(); hero.classList.add('hero--paused'); }
+  }
+
+  playBtn.addEventListener('click', play);
+  replayBtn.addEventListener('click', play);
+  skipBtn && skipBtn.addEventListener('click', ended);
+  closeBtn && closeBtn.addEventListener('click', ended);   // × → 히어로 복귀
+  video.addEventListener('click', togglePause);
+  video.addEventListener('ended', ended);
+  muteBtn && muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    updateMuteUI();
+  });
+}
 
 /* ── Navigation ─────────────────────────────────────────────── */
 

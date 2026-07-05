@@ -156,13 +156,56 @@
 <!-- ══════════════════════════════════════════════════════════
   Section 1: Hero — 송도 센트럴파크 + 사업가 네트워크 카피
 ════════════════════════════════════════════════════════════ -->
-<section id="hero" class="hero" aria-labelledby="hero-heading">
+<section id="hero" class="hero hero--intro" aria-labelledby="hero-heading">
   <picture class="hero__bg">
     <img src="img/hero/songdo-2024-centralpark.jpg"
          alt="인천 송도 센트럴파크와 포스코타워"
          loading="eager"
          fetchpriority="high" />
   </picture>
+
+  <!-- 홍보영상: ▶ 클릭 시 소리와 함께 재생 (자동재생 아님 → 사운드 보장) -->
+  <video class="hero__video" id="hero-video"
+         playsinline preload="none"
+         disablepictureinpicture disableremoteplayback
+         controlslist="nodownload noplaybackrate noremoteplayback"
+         x-webkit-airplay="deny"
+         poster="img/hero/songdo-2024-centralpark.jpg">
+    <source src="video/promo-2026.mp4" type="video/mp4" />
+  </video>
+
+  <!-- 재생 중 닫기 (× → 히어로 복귀) -->
+  <button class="hero__close" id="hero-close" type="button" aria-label="영상 닫기" hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>
+  </button>
+
+  <!-- 일시정지 표시 (영상 클릭 시 중앙 ▶) -->
+  <div class="hero__pauseind" id="hero-pauseind" aria-hidden="true">
+    <span class="hero__pauseind-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+  </div>
+
+  <!-- 재생 중 음소거 토글 -->
+  <button class="hero__mute" id="hero-mute" type="button" aria-label="음소거 전환" hidden>
+    <svg class="hero__mute-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" stroke="none"/>
+      <path d="M15.5 8.8a4.5 4.5 0 0 1 0 6.4"/>
+      <path d="M18.3 6a8.5 8.5 0 0 1 0 12"/>
+    </svg>
+    <svg class="hero__mute-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor" stroke="none"/>
+      <path d="M22 9.5 16.5 15M16.5 9.5 22 15"/>
+    </svg>
+  </button>
+
+  <!-- 진입 인트로: 재생 버튼 -->
+  <div class="hero__intro" id="hero-intro">
+    <button class="hero__play" id="hero-play" type="button" aria-label="홍보영상 재생 (53초)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="hero__skip" id="hero-skip" type="button">건너뛰기 →</button>
+  </div>
+
+  <!-- 최종 상태: 히어로 카피 (영상 종료·건너뛰기 후 등장) -->
   <div class="hero__inner">
     <p class="hero__eyebrow">BNI 히어로챕터 · 인천 송도</p>
     <h1 class="hero__heading" id="hero-heading">
@@ -173,7 +216,10 @@
       <span class="word accent accent-underline">사업가&nbsp;네트워크.</span>
     </h1>
     <p class="hero__sub">매주 금요일 6:30 · 오크우드 프리미어 인천</p>
-    <a href="/apply/" class="hero__cta">참관 신청하기 <span aria-hidden="true">→</span></a>
+    <div class="hero__actions">
+      <a href="/apply/" class="hero__cta">참관 신청하기 <span aria-hidden="true">→</span></a>
+      <button class="hero__replay" id="hero-replay" type="button" hidden>↻ 영상 다시보기</button>
+    </div>
   </div>
 </section>
 

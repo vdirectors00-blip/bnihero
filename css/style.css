@@ -8,7 +8,13 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  scroll-padding-top: 72px;   /* 고정 네비 보정 */
+}
+/* 히어로 → 첫 섹션 '판 넘김'은 JS(initHeroSnap)가 이 구간의 휠만 가로채 처리.
+   CSS scroll-snap 은 rubber-band 로 애매하게 떨어져서 쓰지 않음. */
 
 body {
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -358,7 +364,8 @@ section {
 
 .hero {
   position: relative;
-  min-height: 92vh;
+  min-height: calc(100vh - 72px);      /* 구형 브라우저 폴백 */
+  min-height: calc(100dvh - 72px);     /* 모바일 주소창 포함 정확히 첫 화면 꽉 */
   margin-top: 72px;
   overflow: hidden;
   display: flex;
@@ -400,17 +407,21 @@ section {
 .hero__cta {
   opacity: 0;
   transform: translateY(14px);
+}
+/* 카피는 영상 종료/건너뛰기 후(.hero--ended)에만 리빌 */
+.hero--ended .hero__eyebrow,
+.hero--ended .hero__heading > .word,
+.hero--ended .hero__sub,
+.hero--ended .hero__cta {
   animation: heroFadeUp 0.7s cubic-bezier(.2,.7,.2,1) forwards;
 }
-.hero__eyebrow { animation-delay: 0.2s; }
-.hero__heading > .word:nth-child(1) { animation-delay: 0.4s; }
-.hero__heading > .word:nth-child(2) { animation-delay: 0.5s; }
-.hero__heading > .word:nth-child(3) { animation-delay: 0.6s; }
-/* :nth-child(4) = .br element, skipped */
-.hero__heading > .word:nth-child(5),
-.hero__heading .accent { animation-delay: 0.85s; }
-.hero__sub { animation-delay: 1.3s; }
-.hero__cta { animation-delay: 1.55s; }
+.hero--ended .hero__eyebrow { animation-delay: 0.15s; }
+.hero--ended .hero__heading > .word:nth-child(1) { animation-delay: 0.3s; }
+.hero--ended .hero__heading > .word:nth-child(2) { animation-delay: 0.4s; }
+.hero--ended .hero__heading > .word:nth-child(3) { animation-delay: 0.5s; }
+/* :nth-child(4) = .br element, :nth-child(5) = .accent (자체 타이밍) */
+.hero--ended .hero__sub { animation-delay: 1.05s; }
+.hero--ended .hero__cta { animation-delay: 1.25s; }
 @keyframes heroFadeUp { to { opacity: 1; transform: translateY(0); } }
 
 /* ④ eyebrow 점 펄스 */
@@ -464,9 +475,12 @@ section {
   background-clip: text;
   color: transparent;
   font-weight: 900;
-  animation: heroShimmer 1.4s 1.5s cubic-bezier(.4, 0, .2, 1) forwards,
-             heroFadeUp 0.7s cubic-bezier(.2,.7,.2,1) forwards;
   position: relative;
+}
+/* 강조어 애니메이션도 종료 후에만 (인트로에선 opacity:0 유지) */
+.hero--ended .hero__heading .accent {
+  animation: heroFadeUp 0.7s 0.7s cubic-bezier(.2,.7,.2,1) forwards,
+             heroShimmer 1.4s 1.6s cubic-bezier(.4, 0, .2, 1) forwards;
 }
 @keyframes heroShimmer {
   0%   { background-position: -100% 0, 0 0; }
@@ -482,6 +496,8 @@ section {
   background: linear-gradient(90deg, #E5C77B, #7AD4FF);
   transform: scaleX(0);
   transform-origin: left center;
+}
+.hero--ended .hero__heading .accent-underline::after {
   animation: heroUnderDraw 0.9s 1.7s cubic-bezier(.2,.7,.2,1) forwards;
 }
 @keyframes heroUnderDraw { to { transform: scaleX(1); } }
@@ -510,12 +526,159 @@ section {
 .hero__cta span { transition: transform .2s ease; }
 .hero__cta:hover span { transform: translateX(4px); }
 
+/* ══ 홍보영상 오버레이 ═══════════════════════════════════════ */
+/* 영상: 인트로 이미지 위 z-index 2로 덮어 재생 */
+.hero__video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  background: #0a1426;
+  opacity: 0; visibility: hidden;
+  transition: opacity .6s ease;
+}
+.hero--playing .hero__video { opacity: 1; visibility: visible; }
+
+/* 진입 인트로 (재생 버튼) */
+.hero__intro {
+  position: absolute; inset: 0;
+  z-index: 3;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 26px;
+  /* 중앙 살짝 어둡게 → 흰 버튼·라벨 대비 확보 */
+  background: radial-gradient(ellipse 55% 45% at 50% 52%, rgba(8,14,28,.42), transparent 72%);
+  transition: opacity .5s ease;
+}
+.hero--playing .hero__intro,
+.hero--ended .hero__intro { opacity: 0; pointer-events: none; }
+
+.hero__play {
+  position: relative;
+  width: 118px; height: 118px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(255,255,255,0.18);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.45), 0 16px 50px rgba(0,0,0,0.4);
+  display: grid; place-items: center;
+  transition: transform .2s ease, background .2s ease;
+}
+.hero__play:hover { transform: scale(1.08); background: rgba(255,255,255,0.3); }
+.hero__play svg {
+  width: 46px; height: 46px; fill: #fff; margin-left: 5px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.35));
+}
+/* 액티브한 이중 리플 링 (장식 — 탭 영역 침범 방지) */
+.hero__play::before,
+.hero__play::after {
+  content: ''; position: absolute; inset: -8px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.6);
+  pointer-events: none;
+  animation: heroPulse 2s ease-out infinite;
+}
+.hero__play::after { animation-delay: 1s; }
+@keyframes heroPulse {
+  0%   { transform: scale(1);    opacity: .75; }
+  100% { transform: scale(1.65); opacity: 0; }
+}
+.hero__skip {
+  background: none; border: none; color: rgba(255,255,255,.72);
+  font-size: .85rem; cursor: pointer; padding: 6px 12px;
+  text-shadow: 0 1px 10px rgba(0,0,0,.6);
+  transition: color .2s ease;
+}
+.hero__skip:hover { color: #fff; }
+
+/* 재생 중 닫기 (×) — 영상 우측 상단에 고정(absolute). 영상 스크롤되면 같이 사라짐 */
+.hero__close {
+  position: absolute; top: 16px; right: 28px; z-index: 5;
+  width: 52px; height: 52px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(17,19,28,0.9);
+  color: #fff; display: grid; place-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  transition: background .2s, transform .2s, box-shadow .2s;
+}
+.hero__close:hover { background: rgba(30,33,46,0.95); transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.hero__close[hidden] { display: none; }
+.hero__close svg { width: 22px; height: 22px; display: block; }
+
+/* 일시정지 표시 (영상 클릭 시 중앙 ▶) */
+.hero__pauseind {
+  position: absolute; inset: 0; z-index: 3;
+  display: grid; place-items: center;
+  opacity: 0; pointer-events: none;   /* 클릭은 영상으로 통과 → 재생 재개 */
+  transition: opacity .2s ease;
+}
+.hero--paused .hero__pauseind { opacity: 1; }
+.hero__pauseind-btn {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(0,0,0,.4);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  display: grid; place-items: center;
+}
+.hero__pauseind svg { width: 44px; height: 44px; fill: #fff; margin-left: 5px; }
+@media (max-width: 640px) {
+  .hero__close { top: 12px; right: 16px; }        /* 영상 우상단 고정 */
+  .hero__pauseind-btn { width: 84px; height: 84px; }
+  .hero__pauseind svg { width: 38px; height: 38px; }
+}
+
+/* 음소거 토글 (재생 중) — 영상 우측 상단, × 바로 아래에 고정(absolute) */
+.hero__mute {
+  position: absolute; right: 28px; top: 80px; z-index: 5;
+  width: 52px; height: 52px; border-radius: 50%;
+  border: none; cursor: pointer;
+  background: rgba(17,19,28,0.9);
+  color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);   /* fab-ig 와 동일 */
+  transition: transform 0.2s, box-shadow 0.2s, background .2s;
+}
+.hero__mute:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  background: rgba(30,33,46,0.95);
+}
+.hero__mute[hidden] { display: none; }   /* display:grid 가 [hidden] 이기는 것 방지 */
+.hero__mute svg { width: 22px; height: 22px; display: block; }
+.hero__mute .hero__mute-off { display: none; }
+.hero__mute.is-muted .hero__mute-on { display: none; }
+.hero__mute.is-muted .hero__mute-off { display: block; }
+
+/* CTA + 다시보기 나란히 */
+.hero__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+
+/* 다시보기 — CTA 옆 세컨더리(고스트) 버튼 */
+.hero__replay {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,.12);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,.45);
+  color: #fff; font-size: 1rem; font-weight: 600; line-height: 1.6;   /* CTA(a)와 텍스트박스 맞춤 */
+  padding: 15px 24px; border-radius: 999px; cursor: pointer;   /* 보더 1px 감안 → CTA(58px)와 높이 동일 */
+  opacity: 0;
+  transition: opacity .6s ease 1.4s, background .2s ease, border-color .2s ease;
+}
+.hero--ended .hero__replay { opacity: 1; }
+.hero__replay[hidden] { display: none; }
+.hero__replay:hover { background: rgba(255,255,255,.24); border-color: #fff; }
+
+@media (max-width: 640px) {
+  .hero__play { width: 94px; height: 94px; }
+  .hero__play svg { width: 37px; height: 37px; }
+  .hero__mute { right: 16px; top: 76px; }   /* × 바로 아래 */
+  .hero__replay { font-size: .96rem; padding: 12px 20px; }   /* 모바일 CTA와 높이 맞춤 */
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero__eyebrow, .hero__heading > .word, .hero__sub, .hero__cta {
+  .hero--ended .hero__eyebrow, .hero--ended .hero__heading > .word,
+  .hero--ended .hero__sub, .hero--ended .hero__cta {
     opacity: 1; transform: none; animation: none;
   }
-  .hero__heading .accent { animation: none; background-position: 200% 0, 0 0; }
-  .hero__heading .accent-underline::after { transform: scaleX(1); animation: none; }
+  .hero__play::before, .hero__play::after { animation: none; }
+  .hero--ended .hero__heading .accent { animation: none; background-position: 200% 0, 0 0; }
+  .hero--ended .hero__heading .accent-underline::after { transform: scaleX(1); animation: none; }
   .hero__eyebrow::before { animation: none; }
 }
 
@@ -531,7 +694,7 @@ section {
 }
 
 @media (max-width: 768px) {
-  .hero { min-height: 86vh; }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
   .hero__inner { padding: 0 24px 64px; }
   .hero__eyebrow { margin-bottom: 22px; font-size: 0.95rem; letter-spacing: 0.12em; }
   .hero__heading {
@@ -554,7 +717,7 @@ section {
 }
 
 @media (max-width: 480px) {
-  .hero { min-height: 82vh; }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
   .hero__inner { padding: 0 20px 56px; }
   .hero__eyebrow { font-size: 0.86rem; letter-spacing: 0.1em; margin-bottom: 18px; }
   .hero__heading {
@@ -570,7 +733,7 @@ section {
 }
 
 @media (max-width: 360px) {
-  .hero { min-height: 78vh; }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
   .hero__heading { font-size: 1.85rem; line-height: 1.2; }
   .hero__sub { font-size: 0.85rem; }
   .hero__inner { padding: 0 18px 48px; }
