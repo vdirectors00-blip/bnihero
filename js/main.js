@@ -25,6 +25,7 @@ function initHeroSnap() {
   const about = document.getElementById('about');
   if (!about) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const portrait = window.matchMedia('(orientation: portrait)');   // 모바일 세로 = 스냅 X
   let animating = false;
 
   const aboutTop = () => about.offsetTop - 72;   // 첫 섹션이 네비 아래 딱 붙는 스크롤 위치
@@ -38,7 +39,7 @@ function initHeroSnap() {
   }
 
   function onWheel(e) {
-    if (reduce.matches) return;
+    if (reduce.matches || portrait.matches) return;   // 세로 화면은 스냅 안 걸음
     if (animating) { e.preventDefault(); return; }   // 이동 중 관성 무시
     const y = window.scrollY;
     const top = aboutTop();

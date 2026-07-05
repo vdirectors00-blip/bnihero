@@ -739,6 +739,21 @@ section {
   .hero__inner { padding: 0 18px 48px; }
 }
 
+/* ── 모바일 세로 화면 전용 ──────────────────────────────────────
+   넓은 화면에서만 풀스크린+스냅. 세로에선 강제 풀스크린 X,
+   16:9 홍보영상은 좌우 안 잘리게 밴드로 표시(크롭 대신 히어로 위에 얹힘) */
+@media (orientation: portrait) {
+  .hero { min-height: 84vh; min-height: 84dvh; }
+  .hero__video {
+    top: 50%; bottom: auto;
+    height: auto; aspect-ratio: 16 / 9;
+    transform: translateY(-50%);
+    object-fit: contain;
+  }
+  /* 재생 중 세로: 영상 밴드 위아래를 어둡게 → 깔끔한 레터박스 */
+  .hero--playing::before { background: #0a1426; }
+}
+
 .pain-text {
   font-size: 1rem;
   font-weight: 600;
