@@ -365,7 +365,7 @@ section {
 .hero {
   position: relative;
   min-height: calc(100vh - 72px);      /* 구형 브라우저 폴백 */
-  min-height: calc(100dvh - 72px);     /* 모바일 주소창 포함 정확히 첫 화면 꽉 */
+  min-height: calc(100svh - 72px);     /* svh=고정 뷰포트. 카톡 등 인앱서 스크롤시 주소창 접혀도 안 늘어남(확대 덜컹임 방지) */
   margin-top: 72px;
   overflow: hidden;
   display: flex;
@@ -694,7 +694,7 @@ section {
 }
 
 @media (max-width: 768px) {
-  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
   .hero__inner { padding: 0 24px 64px; }
   .hero__eyebrow { margin-bottom: 22px; font-size: 0.95rem; letter-spacing: 0.12em; }
   .hero__heading {
@@ -717,7 +717,7 @@ section {
 }
 
 @media (max-width: 480px) {
-  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
   .hero__inner { padding: 0 20px 56px; }
   .hero__eyebrow { font-size: 0.86rem; letter-spacing: 0.1em; margin-bottom: 18px; }
   .hero__heading {
@@ -733,7 +733,7 @@ section {
 }
 
 @media (max-width: 360px) {
-  .hero { min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+  .hero { min-height: calc(100vh - 72px); min-height: calc(100svh - 72px); }
   .hero__heading { font-size: 1.85rem; line-height: 1.2; }
   .hero__sub { font-size: 0.85rem; }
   .hero__inner { padding: 0 18px 48px; }
@@ -743,7 +743,7 @@ section {
    넓은 화면에서만 풀스크린+스냅. 세로에선 강제 풀스크린 X,
    16:9 홍보영상은 좌우 안 잘리게 밴드로 표시(크롭 대신 히어로 위에 얹힘) */
 @media (orientation: portrait) {
-  .hero { min-height: 84vh; min-height: 84dvh; }
+  .hero { min-height: 84vh; min-height: 84svh; }
   .hero__video {
     top: 50%; bottom: auto;
     height: auto; aspect-ratio: 16 / 9;
