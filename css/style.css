@@ -1258,6 +1258,10 @@ section {
   padding: 14px 20px;
   background: #fff;
 }
+/* 명함·홈페이지가 둘 다 없어 버튼 영역이 없는 카드 = 아래 구분선 불필요 */
+.member-card-body:last-child {
+  border-bottom: none;
+}
 
 .btn-member {
   font-size: 0.82rem;

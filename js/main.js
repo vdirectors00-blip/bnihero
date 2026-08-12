@@ -340,15 +340,17 @@ async function initMembers() {
       ? `<button class="btn-member btn-card" data-img="${escHtml(m.card_image_url)}" data-name="${escHtml(m.company_name)}">명함보기</button>`
       : '';
 
+    // 명함·홈페이지가 둘 다 없으면 버튼 영역 자체를 그리지 않는다 (빈 칸 방지)
+    const actions = (cardBtn || websiteBtn)
+      ? `<div class="member-card-actions">${cardBtn}${websiteBtn}</div>`
+      : '';
+
     card.innerHTML = `
       <div class="member-card-body">
         <p class="member-company">${escHtml(m.company_name)}</p>
         <p class="member-specialty">${escHtml(m.specialty || '')}</p>
       </div>
-      <div class="member-card-actions">
-        ${cardBtn}
-        ${websiteBtn}
-      </div>`;
+      ${actions}`;
     grid.appendChild(card);
   });
 

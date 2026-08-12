@@ -311,6 +311,10 @@
     let selectedFile = null;
     let submittedCompanies = new Set();  // 이번 주 이미 제출한 회사명
 
+    // Supabase 스토리지 업로드 상한(50MiB)과 동일한 값.
+    // 넘으면 서버가 413으로 거부하므로 올려보내기 전에 미리 막는다.
+    const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
     document.addEventListener('DOMContentLoaded', async () => {
       // 가장 가까운 오프라인 회의일 조회
       try {
@@ -446,16 +450,35 @@
         submitBtn.disabled = !(companySel.value && selectedFile);
       }
 
+      function rejectFile(msg) {
+        fileInput.value = '';
+        selectedFile = null;
+        filenameEl.textContent = '';
+        fileZone.classList.remove('has-file');
+        updateBtn();
+        // updateBtn 안에서 hideMsg 가 불리므로 안내는 반드시 그 뒤에 띄운다
+        showMsg('err', msg);
+      }
+
       fileInput.addEventListener('change', (e) => {
         const f = e.target.files[0];
         if (!f) { selectedFile = null; fileZone.classList.remove('has-file'); updateBtn(); return; }
+        // 드래그앤드롭으로 여러 개 떨어뜨린 경우 (파일선택 창은 1개만 가능)
+        if (e.target.files.length > 1) {
+          rejectFile('파일은 하나만 올릴 수 있습니다. 하나만 선택해주세요.');
+          return;
+        }
         const name = (f.name || '').toLowerCase();
         if (!name.endsWith('.pptx') && !name.endsWith('.ppt')) {
-          showMsg('err', 'PowerPoint 파일(.pptx 또는 .ppt)만 업로드 가능합니다.');
-          fileInput.value = '';
-          selectedFile = null;
-          fileZone.classList.remove('has-file');
-          updateBtn();
+          rejectFile('PowerPoint 파일(.pptx 또는 .ppt)만 업로드 가능합니다.');
+          return;
+        }
+        // 서버(스토리지) 상한과 동일 — 넘으면 올려보내기 전에 미리 막는다
+        if (f.size > MAX_FILE_SIZE) {
+          rejectFile(
+            `파일이 너무 큽니다 (${formatSize(f.size)}). 50MB까지만 올릴 수 있습니다.\n` +
+            '영상이 들어있다면 파워포인트에서 파일 > 정보 > 미디어 압축으로 줄여보세요.\n' +
+            '줄이기 어려우면 ST손휘민에게 카톡으로 보내주세요.');
           return;
         }
         selectedFile = f;
