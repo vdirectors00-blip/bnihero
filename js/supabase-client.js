@@ -95,8 +95,8 @@
  *   4) authenticated ALL (bucket_id = 'wp-uploads')    ← 관리자 다운로드/삭제
  */
 
-const SUPABASE_URL = 'https://dzzjlycqxfqdyqgnqixh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR6empseWNxeGZxZHlxZ25xaXhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5NjU3NTEsImV4cCI6MjA4OTU0MTc1MX0.PBXuSGfe2h-4JNl7dXGKN6WYQ-Jqk21Vt2KD-Fx39Jc';
+const SUPABASE_URL = 'https://bebdwsaqeqsgjtpylsjr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlYmR3c2FxZXFzZ2p0cHlsc2pyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNzkxMjYsImV4cCI6MjEwMjc1NTEyNn0.2_27ZG-CfQVTGXFhQAqRKcJhF7DLQLzbOW6kQLRltxY';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
