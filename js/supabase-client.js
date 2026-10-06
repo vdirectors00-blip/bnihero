@@ -50,8 +50,8 @@
  *   ('referral_count', '6500'),
  *   ('visitor_count', '500'),
  *   ('business_amount', '70'),
- *   ('contact_phone', '010-4848-5527'),
- *   ('contact_email', 'jud150@naver.com'),
+ *   ('contact_phone', '010-8874-4845'),
+ *   ('contact_email', 'hongtax1001@naver.com'),
  *   ('contact_kakao', ''),
  *   ('contact_instagram', 'https://www.instagram.com/bni_hero.ct/');
  *

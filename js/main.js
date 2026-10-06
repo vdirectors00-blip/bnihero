@@ -598,8 +598,8 @@ async function initContactInfo() {
   let settings = {};
   try { settings = await getSettings(); } catch (e) {}
 
-  const phone = settings.contact_phone || '010-4848-5527';
-  const email = settings.contact_email || 'jud150@naver.com';
+  const phone = settings.contact_phone || '010-8874-4845';
+  const email = settings.contact_email || 'hongtax1001@naver.com';
 
   // 전화 링크 업데이트 (SVG 아이콘 보존)
   document.querySelectorAll('a[href^="tel:"]').forEach(el => {

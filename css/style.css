@@ -235,7 +235,7 @@ section {
 
 /* 전화 fab — 마우스오버 시 번호 툴팁 슬라이드 */
 .fab-ig[href^="tel"]::before {
-  content: '010-4848-5527';
+  content: '010-8874-4845';
   position: absolute;
   right: calc(100% + 14px);
   top: 50%;
