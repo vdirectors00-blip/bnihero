@@ -299,7 +299,7 @@
     </div>
 
     <footer>
-      문의: <span class="contact-name">ST손휘민</span><br/>
+      문의: <span class="contact-name">ST김태운</span><br/>
       <a href="/">← 홈으로</a>
     </footer>
   </div>
@@ -443,7 +443,7 @@
         const alreadySubmitted = companySel.value && submittedCompanies.has(companySel.value);
         if (alreadySubmitted) {
           submitBtn.disabled = true;
-          showMsg('info', `⚠️ ${companySel.value}님은 이미 제출하셨습니다.\n파일을 교체하려면 ST손휘민(카톡)에게 연락주세요.`);
+          showMsg('info', `⚠️ ${companySel.value}님은 이미 제출하셨습니다.\n파일을 교체하려면 ST김태운(카톡)에게 연락주세요.`);
           return;
         }
         hideMsg();
@@ -478,7 +478,7 @@
           rejectFile(
             `파일이 너무 큽니다 (${formatSize(f.size)}). 50MB까지만 올릴 수 있습니다.\n` +
             '영상이 들어있다면 파워포인트에서 파일 > 정보 > 미디어 압축으로 줄여보세요.\n' +
-            '줄이기 어려우면 ST손휘민에게 카톡으로 보내주세요.');
+            '줄이기 어려우면 ST김태운에게 카톡으로 보내주세요.');
           return;
         }
         selectedFile = f;
