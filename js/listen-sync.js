@@ -18,6 +18,7 @@
 
 (function () {
   const BACKUP_KEY = 'members_backup';
+  const BACKUP_COLS = 'id,company_name,specialty,card_image_url,website_url,sort_order,created_at';
   let plan = null;           // 비교 결과
   let sheetFileName = '';
 
@@ -34,8 +35,9 @@
   /* ── 이름 정규화 ───────────────────────────────────────── */
   function normCompany(s) {
     return String(s || '')
-      .replace(/주식회사|\(주\)|㈜|\(유\)|유한회사/g, '')
       .replace(/\s+/g, '')
+      .replace(/^(주식회사|유한회사|\(주\)|㈜|\(유\))+/, '')
+      .replace(/(주식회사|유한회사|\(주\)|㈜|\(유\))+$/, '')
       .toLowerCase();
   }
   function normSpec(s) {
@@ -43,6 +45,30 @@
   }
   function clean(v) {
     return v == null ? '' : String(v).replace(/\s+/g, ' ').trim();
+  }
+
+  // getMembers()는 오류 때 빈 배열을 돌려준다. 여기서는 오류면 멈춘다.
+  async function fetchMembersStrict() {
+    const { data, error } = await supabaseClient.from('members').select('*').order('sort_order', { ascending: true });
+    if (error) throw new Error('지금 명단을 불러오지 못했습니다. 새로고침 후 다시 올려 주세요. (' + error.message + ')');
+    if (!data || !data.length) throw new Error('지금 명단이 비어 있게 읽혔습니다. 새로고침 후 다시 올려 주세요.');
+    return data;
+  }
+
+  async function readBackup() {
+    const { data, error } = await supabaseClient.from('settings').select('value').eq('key', BACKUP_KEY).maybeSingle();
+    if (error) throw new Error('보관된 명단을 확인하지 못했습니다. (' + error.message + ')');
+    return data && data.value ? JSON.parse(data.value) : null;
+  }
+
+  // 작업 뒤 목록 새로 그리기. 조회가 실패하면 0명으로 지우지 않고 새로고침을 안내한다.
+  async function reloadMembersTable() {
+    try {
+      membersCache = await fetchMembersStrict();
+      renderMembersTable();
+    } catch (_) {
+      showToast('작업은 끝났지만 목록을 다시 불러오지 못했습니다. 새로고침해 주세요.');
+    }
   }
 
   /* ── 화면 상태 ─────────────────────────────────────────── */
@@ -62,14 +88,14 @@
 
   async function refreshBackupInfo() {
     try {
-      const s = await getSettings();
-      const raw = s[BACKUP_KEY];
-      if (!raw) { $('ls-restore-btn').hidden = true; $('ls-backup-info').hidden = true; return; }
-      const b = JSON.parse(raw);
-      $('ls-restore-btn').hidden = false;
+      const b = await readBackup();
+      if (!b) { $('ls-restore-btn').hidden = true; $('ls-backup-info').hidden = true; return; }
       $('ls-backup-info').hidden = false;
+      $('ls-restore-btn').hidden = b.status === 'restored';
+      const st = b.status === 'applying' ? ' · ⚠ 반영이 끝까지 되지 않았습니다. 되돌리기를 먼저 눌러 주세요.'
+               : b.status === 'restored' ? ` · ${fmtTime(b.restoredAt)}에 되돌림` : '';
       $('ls-backup-info').textContent =
-        `마지막 반영: ${fmtTime(b.at)} · ${b.sheet || '경청표'} · 반영 직전 ${b.rows.length}명 보관 중`;
+        `마지막 반영: ${fmtTime(b.at)} · ${b.sheet || '경청표'} · 반영 직전 ${b.rows.length}명 보관${st}`;
     } catch (_) { /* 보관본이 없거나 읽기 실패: 버튼만 숨김 */ }
   }
   function fmtTime(iso) {
@@ -95,7 +121,7 @@
       const buf = await file.arrayBuffer();
       const wb = XLSX.read(buf, { type: 'array' });
       const roster = readRoster(wb);
-      const members = await getMembers();
+      const members = await fetchMembersStrict();
       membersCache = members;
       plan = buildPlan(roster, members);
       renderPlan();
@@ -106,11 +132,8 @@
 
   // 뒷면에서 제목 줄(No. / 회사명 / 전문분야)을 찾아 그 아래 번호 있는 줄만 읽는다.
   function readRoster(wb) {
-    const names = wb.SheetNames;
-    const ordered = [
-      ...names.filter(n => n.trim() === '뒷면'),
-      ...names.filter(n => n.trim() !== '뒷면' && !/EN|앞면|연락망|출석/i.test(n)),
-    ];
+    const ordered = wb.SheetNames.filter(n => n.replace(/\s+/g, '') === '뒷면');
+    if (!ordered.length) throw new Error("양식이 달라 읽지 못했습니다. 엑셀에 '뒷면' 시트가 없습니다.");
 
     for (const name of ordered) {
       const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: null, raw: true });
@@ -128,14 +151,19 @@
       }
       if (h < 0) continue;
 
-      const list = [];
+      const list = [], bad = [];
       for (let i = h + 1; i < rows.length; i++) {
         const r = rows[i];
-        const noRaw = r[noCol];
-        const no = typeof noRaw === 'number' ? noRaw : (/^\d+$/.test(clean(noRaw)) ? parseInt(clean(noRaw), 10) : NaN);
+        const noTxt = clean(r[noCol]);
+        const no = typeof r[noCol] === 'number' ? r[noCol] : (/^\d+\.?$/.test(noTxt) ? parseInt(noTxt, 10) : NaN);
         const company = clean(r[compCol]);
-        if (!Number.isInteger(no) || !company) continue;   // 그룹 제목 줄·빈 줄은 건너뜀
+        if (!company && !Number.isInteger(no)) continue;            // 빈 줄·그룹 제목 줄(1그룹 …)
+        if (!company) continue;                                    // 번호만 있고 회사가 빈 칸(빈 자리)
+        if (!Number.isInteger(no) || no < 1) { bad.push(`${i + 1}번째 줄 '${company}' (번호: ${noTxt || '없음'})`); continue; }
         list.push({ no, company, specialty: clean(r[specCol]), person: nameCol >= 0 ? clean(r[nameCol]) : '' });
+      }
+      if (bad.length) {
+        throw new Error('번호를 읽지 못한 회원이 있어 멈췄습니다. 경청표 No. 칸을 숫자로 고친 뒤 다시 올려 주세요: ' + bad.join(', '));
       }
 
       if (list.length < 10) {
@@ -150,7 +178,9 @@
         seenCo.set(k, x.company);
       }
       list.sort((a, b) => a.no - b.no);
-      return { sheet: name, list };
+      const gaps = [];
+      for (let n = 1; n <= list[list.length - 1].no; n++) if (!seenNo.has(n)) gaps.push(n);
+      return { sheet: name, list, gaps };
     }
     throw new Error("양식이 달라 읽지 못했습니다. '뒷면' 시트에서 'No. / 회사명 / 전문분야' 제목 줄을 찾지 못했습니다.");
   }
@@ -158,7 +188,11 @@
   /* ── 2) 비교 ───────────────────────────────────────────── */
   function buildPlan(roster, members) {
     const byKey = new Map();
-    members.forEach(m => byKey.set(normCompany(m.company_name), m));
+    members.forEach(m => {
+      const k = normCompany(m.company_name);
+      if (byKey.has(k)) throw new Error(`지금 명단에 비슷한 이름이 두 개 있어 구분할 수 없습니다: ${byKey.get(k).company_name} / ${m.company_name}. 브이디렉터스에 알려 주세요.`);
+      byKey.set(k, m);
+    });
     const used = new Set();
     const rows = [];
 
@@ -185,7 +219,7 @@
       rows.push({ kind: 'out', member: m, sheet: null, newOrder: tail, checked: false });
     });
 
-    return { sheet: roster.sheet, count: roster.list.length, rows };
+    return { sheet: roster.sheet, count: roster.list.length, gaps: roster.gaps, rows };
   }
 
   function renderPlan() {
@@ -197,7 +231,8 @@
 
     $('ls-summary').textContent =
       `경청표 ${plan.count}명 · 지금 명단 ${membersCache.length}명 → ` +
-      `신입 ${cnt('new')} · 경청표에 없음 ${cnt('out')} · 분야 다름 ${rows.filter(r => r.specChanged).length} · 순서 바뀜 ${orderMoves}`;
+      `신입 ${cnt('new')} · 경청표에 없음 ${cnt('out')} · 분야 다름 ${rows.filter(r => r.specChanged).length} · 순서 바뀜 ${orderMoves}` +
+      (plan.gaps.length ? ` · 경청표에 비어 있는 번호: ${plan.gaps.join(', ')}` : '');
 
     const tbody = $('ls-tbody');
     tbody.innerHTML = '';
@@ -276,11 +311,19 @@
     btn.disabled = true;
     btn.textContent = '반영 중…';
 
+    let backup = null;
     try {
+      // 0) 앞선 반영이 중간에 멈췄으면 그 보관본을 덮어쓰지 않는다
+      const prev = await readBackup();
+      if (prev && prev.status === 'applying') {
+        throw new Error('지난번 반영이 끝까지 되지 않았습니다. 먼저 "직전 명단으로 되돌리기"를 눌러 주세요.');
+      }
+
       // 1) 보관 (실패하면 아무것도 바꾸지 않음)
-      const { data: full, error } = await supabaseClient.from('members').select('*').order('sort_order', { ascending: true });
+      const { data: full, error } = await supabaseClient.from('members').select(BACKUP_COLS).order('sort_order', { ascending: true });
       if (error) throw error;
-      const backup = { at: new Date().toISOString(), sheet: sheetFileName, rows: full };
+      if (!full || !full.length) throw new Error('지금 명단을 불러오지 못했습니다. 새로고침 후 다시 해 주세요.');
+      backup = { at: new Date().toISOString(), sheet: sheetFileName, status: 'applying', rows: full };
       await upsertSetting(BACKUP_KEY, JSON.stringify(backup));
       try {
         const stamp = backup.at.slice(0, 10).replace(/-/g, '');
@@ -304,13 +347,18 @@
         await insertMember({ company_name: r.sheet.company, specialty: r.sheet.specialty, sort_order: r.sheet.no });
       }
 
-      membersCache = await getMembers();
-      renderMembersTable();
+      backup.status = 'done';
+      await upsertSetting(BACKUP_KEY, JSON.stringify(backup));
+
+      await reloadMembersTable();
       resetView();
       refreshBackupInfo();
       showToast(`반영했습니다. 지금 명단 ${membersCache.length}명`, 'success');
     } catch (err) {
-      showToast('반영 중 문제가 생겼습니다: ' + (err.message || err) + ' · "직전 명단으로 되돌리기"로 되돌릴 수 있습니다.');
+      const half = backup && backup.status === 'applying';
+      showToast((half ? '반영 중 문제가 생겼습니다: ' : '반영하지 못했습니다: ') + (err.message || err) +
+        (half ? ' · "직전 명단으로 되돌리기"를 눌러 주세요.' : ''));
+      resetView();   // 같은 비교 결과로 다시 누르지 못하게. 다시 하려면 파일을 다시 올린다.
       membersCache = await getMembers();
       renderMembersTable();
       refreshBackupInfo();
@@ -324,24 +372,29 @@
   async function restoreBackup() {
     let b;
     try {
-      const s = await getSettings();
-      b = JSON.parse(s[BACKUP_KEY]);
-    } catch (_) {
-      showToast('보관된 명단이 없습니다.');
+      b = await readBackup();
+    } catch (err) {
+      showToast(err.message);
       return;
     }
+    if (!b || !b.rows || !b.rows.length) { showToast('보관된 명단이 없습니다.'); return; }
+    if (b.status === 'restored') { showToast('이미 되돌린 보관본입니다.'); refreshBackupInfo(); return; }
     if (!confirm(`${fmtTime(b.at)} 반영 직전 명단(${b.rows.length}명)으로 되돌릴까요?\n그 뒤에 넣은 멤버는 빠지고, 뺀 멤버는 다시 들어옵니다.`)) return;
 
     const btn = $('ls-restore-btn');
     btn.disabled = true;
     try {
-      const keep = new Set(b.rows.map(r => r.id));
-      const now = await getMembers();
-      for (const m of now) if (!keep.has(m.id)) await deleteMember(m.id);
+      // 먼저 보관본을 되살리고(upsert), 성공한 뒤에만 보관본에 없는 멤버를 뺀다
       const { error } = await supabaseClient.from('members').upsert(b.rows, { onConflict: 'id' });
       if (error) throw error;
-      membersCache = await getMembers();
-      renderMembersTable();
+      const keep = new Set(b.rows.map(r => r.id));
+      const now = await fetchMembersStrict();
+      for (const m of now) if (!keep.has(m.id)) await deleteMember(m.id);
+      b.status = 'restored';
+      b.restoredAt = new Date().toISOString();
+      await upsertSetting(BACKUP_KEY, JSON.stringify(b));
+      await reloadMembersTable();
+      refreshBackupInfo();
       showToast(`되돌렸습니다. 지금 명단 ${membersCache.length}명`, 'success');
     } catch (err) {
       showToast('되돌리기 실패: ' + (err.message || err));
