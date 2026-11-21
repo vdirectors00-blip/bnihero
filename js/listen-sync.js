@@ -1,0 +1,352 @@
+/* ============================================================
+ * listen-sync.js – 경청표 엑셀로 멤버 명단 맞추기 (Admin 멤버 관리 탭)
+ *
+ * 흐름: 파일 고르기 → 뒷면 회원 명단 읽기 → 지금 명단과 비교 표시
+ *       → [반영] 누르면 직전 명단 보관(settings.members_backup + JSON 다운로드) 후 반영
+ *
+ * 규칙 (바꾸지 말 것)
+ * - 회사명(company_name)은 기존 값 유지. wp_submissions 가 회사명 문자열로 물려 있어
+ *   이름을 바꾸면 지난 위클리 제출 기록과 끊긴다. 신입만 경청표 표기 그대로 넣는다.
+ * - 경청표에 없는 멤버는 자동 삭제 금지. "빼기" 체크한 것만 삭제, 나머지는 맨 뒤로.
+ * - 전문분야 차이는 "바꾸기" 체크한 것만 반영(기본 체크 해제). 띄어쓰기 차이는 무시.
+ * - 순서(sort_order) = 경청표 No.  (메인 카드·weekly 드롭다운·WP 취합/ZIP 순서 공용)
+ * - 칸 위치는 제목 줄(No. / 회사명 / 전문분야)을 찾아서 정한다. 못 찾으면 반영하지 않고 멈춘다.
+ *
+ * admin.js 의 전역(membersCache, renderMembersTable, getMembers, showToast,
+ * escHtml, triggerDownload)과 supabase-client.js 함수를 그대로 쓴다.
+ * ============================================================ */
+
+(function () {
+  const BACKUP_KEY = 'members_backup';
+  let plan = null;           // 비교 결과
+  let sheetFileName = '';
+
+  const $ = (id) => document.getElementById(id);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $('ls-file')?.addEventListener('change', onFilePicked);
+    $('ls-cancel-btn')?.addEventListener('click', resetView);
+    $('ls-apply-btn')?.addEventListener('click', applyPlan);
+    $('ls-restore-btn')?.addEventListener('click', restoreBackup);
+    refreshBackupInfo();
+  });
+
+  /* ── 이름 정규화 ───────────────────────────────────────── */
+  function normCompany(s) {
+    return String(s || '')
+      .replace(/주식회사|\(주\)|㈜|\(유\)|유한회사/g, '')
+      .replace(/\s+/g, '')
+      .toLowerCase();
+  }
+  function normSpec(s) {
+    return String(s || '').replace(/\s+/g, '');
+  }
+  function clean(v) {
+    return v == null ? '' : String(v).replace(/\s+/g, ' ').trim();
+  }
+
+  /* ── 화면 상태 ─────────────────────────────────────────── */
+  function showError(msg) {
+    const el = $('ls-error');
+    el.textContent = msg;
+    el.hidden = false;
+    $('ls-result').hidden = true;
+  }
+  function resetView() {
+    plan = null;
+    $('ls-file').value = '';
+    $('ls-file-name').textContent = '선택한 파일 없음';
+    $('ls-error').hidden = true;
+    $('ls-result').hidden = true;
+  }
+
+  async function refreshBackupInfo() {
+    try {
+      const s = await getSettings();
+      const raw = s[BACKUP_KEY];
+      if (!raw) { $('ls-restore-btn').hidden = true; $('ls-backup-info').hidden = true; return; }
+      const b = JSON.parse(raw);
+      $('ls-restore-btn').hidden = false;
+      $('ls-backup-info').hidden = false;
+      $('ls-backup-info').textContent =
+        `마지막 반영: ${fmtTime(b.at)} · ${b.sheet || '경청표'} · 반영 직전 ${b.rows.length}명 보관 중`;
+    } catch (_) { /* 보관본이 없거나 읽기 실패: 버튼만 숨김 */ }
+  }
+  function fmtTime(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '-';
+    const p = (n) => String(n).padStart(2, '0');
+    return `${d.getMonth() + 1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  }
+
+  /* ── 1) 파일 읽기 ──────────────────────────────────────── */
+  async function onFilePicked(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    sheetFileName = file.name;
+    $('ls-file-name').textContent = file.name;
+    $('ls-error').hidden = true;
+
+    if (typeof XLSX === 'undefined') {
+      showError('엑셀을 읽는 도구를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요.');
+      return;
+    }
+    try {
+      const buf = await file.arrayBuffer();
+      const wb = XLSX.read(buf, { type: 'array' });
+      const roster = readRoster(wb);
+      const members = await getMembers();
+      membersCache = members;
+      plan = buildPlan(roster, members);
+      renderPlan();
+    } catch (err) {
+      showError(err.message || String(err));
+    }
+  }
+
+  // 뒷면에서 제목 줄(No. / 회사명 / 전문분야)을 찾아 그 아래 번호 있는 줄만 읽는다.
+  function readRoster(wb) {
+    const names = wb.SheetNames;
+    const ordered = [
+      ...names.filter(n => n.trim() === '뒷면'),
+      ...names.filter(n => n.trim() !== '뒷면' && !/EN|앞면|연락망|출석/i.test(n)),
+    ];
+
+    for (const name of ordered) {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: null, raw: true });
+      let h = -1, noCol = -1, compCol = -1, specCol = -1, nameCol = -1;
+      for (let i = 0; i < Math.min(rows.length, 30); i++) {
+        const r = rows[i].map(c => clean(c));
+        const c = r.findIndex(x => x === '회사명');
+        const s = r.findIndex(x => x.includes('전문분야'));
+        const n = r.findIndex(x => /^no\.?$/i.test(x));
+        if (c >= 0 && s >= 0 && n >= 0) {
+          h = i; compCol = c; specCol = s; noCol = n;
+          nameCol = r.findIndex(x => x === '성명');
+          break;
+        }
+      }
+      if (h < 0) continue;
+
+      const list = [];
+      for (let i = h + 1; i < rows.length; i++) {
+        const r = rows[i];
+        const noRaw = r[noCol];
+        const no = typeof noRaw === 'number' ? noRaw : (/^\d+$/.test(clean(noRaw)) ? parseInt(clean(noRaw), 10) : NaN);
+        const company = clean(r[compCol]);
+        if (!Number.isInteger(no) || !company) continue;   // 그룹 제목 줄·빈 줄은 건너뜀
+        list.push({ no, company, specialty: clean(r[specCol]), person: nameCol >= 0 ? clean(r[nameCol]) : '' });
+      }
+
+      if (list.length < 10) {
+        throw new Error(`양식이 달라 읽지 못했습니다. '${name}' 시트에서 회원이 ${list.length}명만 읽혔습니다. 뒷면 칸 위치(No. · 성명 · 회사명 · 전문분야)를 확인해 주세요.`);
+      }
+      const seenNo = new Set(), seenCo = new Map();
+      for (const x of list) {
+        if (seenNo.has(x.no)) throw new Error(`경청표에 ${x.no}번이 두 번 있습니다. 번호를 고친 뒤 다시 올려 주세요.`);
+        seenNo.add(x.no);
+        const k = normCompany(x.company);
+        if (seenCo.has(k)) throw new Error(`경청표에 같은 회사가 두 번 있습니다: ${seenCo.get(k)} / ${x.company}`);
+        seenCo.set(k, x.company);
+      }
+      list.sort((a, b) => a.no - b.no);
+      return { sheet: name, list };
+    }
+    throw new Error("양식이 달라 읽지 못했습니다. '뒷면' 시트에서 'No. / 회사명 / 전문분야' 제목 줄을 찾지 못했습니다.");
+  }
+
+  /* ── 2) 비교 ───────────────────────────────────────────── */
+  function buildPlan(roster, members) {
+    const byKey = new Map();
+    members.forEach(m => byKey.set(normCompany(m.company_name), m));
+    const used = new Set();
+    const rows = [];
+
+    for (const x of roster.list) {
+      const m = byKey.get(normCompany(x.company));
+      if (m && !used.has(m.id)) {
+        used.add(m.id);
+        const specChanged = !!x.specialty && normSpec(x.specialty) !== normSpec(m.specialty);
+        const orderChanged = m.sort_order !== x.no;
+        rows.push({
+          kind: specChanged ? 'spec' : (orderChanged ? 'order' : 'same'),
+          member: m, sheet: x, newOrder: x.no,
+          specChanged, orderChanged, checked: false,
+        });
+      } else {
+        rows.push({ kind: 'new', member: null, sheet: x, newOrder: x.no, checked: true });
+      }
+    }
+
+    const maxNo = roster.list[roster.list.length - 1].no;
+    let tail = maxNo;
+    members.filter(m => !used.has(m.id)).forEach(m => {
+      tail += 1;
+      rows.push({ kind: 'out', member: m, sheet: null, newOrder: tail, checked: false });
+    });
+
+    return { sheet: roster.sheet, count: roster.list.length, rows };
+  }
+
+  function renderPlan() {
+    const rows = plan.rows;
+    const cnt = (k) => rows.filter(r => r.kind === k).length;
+    const orderMoves = rows.filter(r => r.member && r.orderChanged).length;
+    const rank = { new: 0, out: 1, spec: 2, order: 3 };
+    const changed = rows.filter(r => r.kind !== 'same').sort((a, b) => rank[a.kind] - rank[b.kind] || a.newOrder - b.newOrder);
+
+    $('ls-summary').textContent =
+      `경청표 ${plan.count}명 · 지금 명단 ${membersCache.length}명 → ` +
+      `신입 ${cnt('new')} · 경청표에 없음 ${cnt('out')} · 분야 다름 ${rows.filter(r => r.specChanged).length} · 순서 바뀜 ${orderMoves}`;
+
+    const tbody = $('ls-tbody');
+    tbody.innerHTML = '';
+    if (!changed.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#888;">지금 명단과 똑같습니다. 바뀔 내용이 없습니다.</td></tr>';
+    }
+
+    changed.forEach((r) => {
+      const idx = rows.indexOf(r);
+      const tr = document.createElement('tr');
+      const name = r.member ? r.member.company_name : r.sheet.company;
+      let pill = '', spec = '', act = '', order = '';
+
+      if (r.kind === 'new') {
+        pill = '<span class="ls-pill ls-new">신입</span>';
+        spec = escHtml(r.sheet.specialty);
+        order = r.sheet.no;
+        act = checkbox(idx, r.checked, '넣기');
+      } else if (r.kind === 'out') {
+        pill = '<span class="ls-pill ls-out">경청표에 없음</span>';
+        spec = escHtml(r.member.specialty);
+        order = `${r.member.sort_order} → 맨 뒤`;
+        act = checkbox(idx, r.checked, '빼기');
+      } else {
+        pill = r.specChanged ? '<span class="ls-pill ls-chg">분야 다름</span>' : '<span class="ls-pill ls-chg">순서 바뀜</span>';
+        spec = r.specChanged
+          ? `<span class="ls-old">${escHtml(r.member.specialty || '(없음)')}</span> → ${escHtml(r.sheet.specialty)}`
+          : escHtml(r.member.specialty);
+        order = r.orderChanged ? `${r.member.sort_order} → ${r.newOrder}` : r.newOrder;
+        act = r.specChanged ? checkbox(idx, r.checked, '분야 바꾸기') : '순서만 맞춤';
+      }
+
+      const sheetName = r.member && r.sheet && r.sheet.company !== r.member.company_name
+        ? `<br><span class="ls-muted">경청표 표기: ${escHtml(r.sheet.company)}</span>` : '';
+      const person = r.sheet && r.sheet.person ? ` <span class="ls-muted">(${escHtml(r.sheet.person)})</span>` : '';
+
+      tr.innerHTML = `<td>${pill}</td><td style="white-space:nowrap">${order}</td>` +
+        `<td><strong>${escHtml(name)}</strong>${person}${sheetName}</td><td>${spec}</td><td>${act}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    const same = cnt('same');
+    if (same && changed.length) {
+      const tr = document.createElement('tr');
+      tr.className = 'ls-same-row';
+      tr.innerHTML = `<td colspan="5"><span class="ls-pill ls-same">그대로</span> 나머지 ${same}명은 바뀌는 것이 없습니다.</td>`;
+      tbody.appendChild(tr);
+    }
+
+    tbody.querySelectorAll('input[data-ls-idx]').forEach(cb => {
+      cb.addEventListener('change', () => { plan.rows[+cb.dataset.lsIdx].checked = cb.checked; });
+    });
+
+    $('ls-apply-btn').disabled = !changed.length;
+    $('ls-result').hidden = false;
+  }
+
+  function checkbox(idx, checked, label) {
+    return `<label class="ls-check"><input type="checkbox" data-ls-idx="${idx}" ${checked ? 'checked' : ''}/> ${label}</label>`;
+  }
+
+  /* ── 3) 반영 ───────────────────────────────────────────── */
+  async function applyPlan() {
+    if (!plan) return;
+    const rows = plan.rows;
+    const adds = rows.filter(r => r.kind === 'new' && r.checked);
+    const dels = rows.filter(r => r.kind === 'out' && r.checked);
+    const keepsOut = rows.filter(r => r.kind === 'out' && !r.checked);
+
+    const msg = `이대로 반영할까요?\n\n신입 넣기 ${adds.length}명\n빼기 ${dels.length}명` +
+      (keepsOut.length ? `\n경청표에 없지만 남겨 두기 ${keepsOut.length}명 (맨 뒤로)` : '') +
+      `\n\n반영 직전 명단은 자동으로 보관됩니다.`;
+    if (!confirm(msg)) return;
+
+    const btn = $('ls-apply-btn');
+    btn.disabled = true;
+    btn.textContent = '반영 중…';
+
+    try {
+      // 1) 보관 (실패하면 아무것도 바꾸지 않음)
+      const { data: full, error } = await supabaseClient.from('members').select('*').order('sort_order', { ascending: true });
+      if (error) throw error;
+      const backup = { at: new Date().toISOString(), sheet: sheetFileName, rows: full };
+      await upsertSetting(BACKUP_KEY, JSON.stringify(backup));
+      try {
+        const stamp = backup.at.slice(0, 10).replace(/-/g, '');
+        triggerDownload(new Blob([JSON.stringify(full, null, 2)], { type: 'application/json' }), `members_backup_${stamp}.json`);
+      } catch (_) { /* 파일 저장은 덤. 보관본은 이미 저장됨 */ }
+
+      // 2) 빼기
+      for (const r of dels) await deleteMember(r.member.id);
+
+      // 3) 기존 멤버 순서·분야
+      for (const r of rows) {
+        if (!r.member || (r.kind === 'out' && r.checked)) continue;
+        const patch = {};
+        if (r.member.sort_order !== r.newOrder) patch.sort_order = r.newOrder;
+        if (r.specChanged && r.checked) patch.specialty = r.sheet.specialty;
+        if (Object.keys(patch).length) await updateMember(r.member.id, patch);
+      }
+
+      // 4) 신입
+      for (const r of adds) {
+        await insertMember({ company_name: r.sheet.company, specialty: r.sheet.specialty, sort_order: r.sheet.no });
+      }
+
+      membersCache = await getMembers();
+      renderMembersTable();
+      resetView();
+      refreshBackupInfo();
+      showToast(`반영했습니다. 지금 명단 ${membersCache.length}명`, 'success');
+    } catch (err) {
+      showToast('반영 중 문제가 생겼습니다: ' + (err.message || err) + ' · "직전 명단으로 되돌리기"로 되돌릴 수 있습니다.');
+      membersCache = await getMembers();
+      renderMembersTable();
+      refreshBackupInfo();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '반영';
+    }
+  }
+
+  /* ── 4) 되돌리기 ───────────────────────────────────────── */
+  async function restoreBackup() {
+    let b;
+    try {
+      const s = await getSettings();
+      b = JSON.parse(s[BACKUP_KEY]);
+    } catch (_) {
+      showToast('보관된 명단이 없습니다.');
+      return;
+    }
+    if (!confirm(`${fmtTime(b.at)} 반영 직전 명단(${b.rows.length}명)으로 되돌릴까요?\n그 뒤에 넣은 멤버는 빠지고, 뺀 멤버는 다시 들어옵니다.`)) return;
+
+    const btn = $('ls-restore-btn');
+    btn.disabled = true;
+    try {
+      const keep = new Set(b.rows.map(r => r.id));
+      const now = await getMembers();
+      for (const m of now) if (!keep.has(m.id)) await deleteMember(m.id);
+      const { error } = await supabaseClient.from('members').upsert(b.rows, { onConflict: 'id' });
+      if (error) throw error;
+      membersCache = await getMembers();
+      renderMembersTable();
+      showToast(`되돌렸습니다. 지금 명단 ${membersCache.length}명`, 'success');
+    } catch (err) {
+      showToast('되돌리기 실패: ' + (err.message || err));
+    } finally {
+      btn.disabled = false;
+    }
+  }
+})();

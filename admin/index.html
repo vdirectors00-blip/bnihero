@@ -65,6 +65,42 @@
       Tab 1: 멤버 관리
     ──────────────────────────────────────────────────── -->
     <div id="tab-members" class="admin-tab-panel active" role="tabpanel">
+      <!-- 경청표로 명단 맞추기 (js/listen-sync.js) -->
+      <div class="admin-card" id="ls-card">
+        <div class="admin-card-header">
+          <h2 class="admin-card-title">경청표로 명단 맞추기</h2>
+          <button id="ls-restore-btn" class="btn-sm" type="button" hidden>직전 명단으로 되돌리기</button>
+        </div>
+        <p class="ls-help">최신 경청표 엑셀(.xlsx)을 올리면 지금 명단과 비교해서 보여 줍니다. <b>반영</b>을 누르기 전에는 아무것도 바뀌지 않습니다.<br>
+          반영하면 메인 홈페이지 멤버 카드, 위클리 제출 회사 목록, 위클리 취합 다운로드 순서가 경청표 번호 순서로 바뀝니다.</p>
+        <div class="ls-pick">
+          <label for="ls-file" class="btn-add ls-file-label">경청표 파일 고르기</label>
+          <input type="file" id="ls-file" accept=".xlsx,.xls" hidden />
+          <span id="ls-file-name" class="ls-muted">선택한 파일 없음</span>
+        </div>
+        <p id="ls-backup-info" class="ls-muted" hidden></p>
+        <div id="ls-error" class="admin-msg admin-msg-error" hidden></div>
+        <div id="ls-result" hidden>
+          <p id="ls-summary" class="ls-summary"></p>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>구분</th><th>순서</th><th>회사명</th><th>전문분야</th><th>반영</th></tr></thead>
+              <tbody id="ls-tbody"></tbody>
+            </table>
+          </div>
+          <ul class="ls-notes">
+            <li>회사 이름은 지금 명단 표기를 그대로 둡니다. (지난 위클리 제출 기록과 연결 유지)</li>
+            <li>경청표에 없는 분은 <b>빼기</b>를 체크해야만 빠집니다. 체크하지 않으면 맨 뒤로 갑니다.</li>
+            <li>전문분야가 다르면 <b>바꾸기</b>를 체크한 것만 바뀝니다.</li>
+            <li>신입의 명함·홈페이지 주소는 반영 후 아래 목록의 <b>수정</b>에서 넣어 주세요.</li>
+          </ul>
+          <div class="ls-actions">
+            <button id="ls-cancel-btn" class="btn-sm" type="button">취소</button>
+            <button id="ls-apply-btn" class="btn-add" type="button">반영</button>
+          </div>
+        </div>
+      </div>
+
       <div class="admin-card">
         <div class="admin-card-header">
           <h2 class="admin-card-title">멤버 목록</h2>
@@ -331,6 +367,8 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="/js/supabase-client.js"></script>
 <script src="/js/admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="/js/listen-sync.js"></script>
 
 </body>
 </html>

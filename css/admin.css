@@ -739,3 +739,21 @@ button { cursor: pointer; font-family: inherit; }
   .admin-cal-cell { min-height: 60px; }
   .cal-badge { font-size: 0.55rem; }
 }
+
+/* ── 경청표로 명단 맞추기 ─────────────────────────────────── */
+.ls-help { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 14px; }
+.ls-pick { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.ls-file-label { cursor: pointer; display: inline-block; }
+.ls-muted { font-size: 0.84rem; color: #888; }
+.ls-summary { font-size: 0.92rem; font-weight: 700; color: var(--navy); margin: 14px 0 10px; }
+.ls-pill { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.ls-new { background: #e6f4ec; color: #1a7a3c; }
+.ls-out { background: #fbe9e7; color: #b3342b; }
+.ls-chg { background: #e8effa; color: #2a5db0; }
+.ls-same { background: #f1f1f5; color: #777; }
+.ls-check { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+.ls-old { color: #999; text-decoration: line-through; margin-right: 4px; }
+.ls-notes { font-size: 0.83rem; color: #666; margin: 14px 0 0; padding-left: 1.2em; line-height: 1.8; }
+.ls-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.ls-same-row td { color: #999; }
+#ls-card [hidden] { display: none !important; }
