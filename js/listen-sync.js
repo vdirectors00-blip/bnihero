@@ -8,7 +8,7 @@
  * - 회사명(company_name)은 기존 값 유지. wp_submissions 가 회사명 문자열로 물려 있어
  *   이름을 바꾸면 지난 위클리 제출 기록과 끊긴다. 신입만 경청표 표기 그대로 넣는다.
  * - 경청표에 없는 멤버는 자동 삭제 금지. "빼기" 체크한 것만 삭제, 나머지는 맨 뒤로.
- * - 전문분야 차이는 "바꾸기" 체크한 것만 반영(기본 체크 해제). 띄어쓰기 차이는 무시.
+ * - 전문분야는 경청표가 기준(11/21 사장님 확정): 다르면 기본 체크, 체크 해제한 것만 유지. 띄어쓰기 차이는 무시.
  * - 순서(sort_order) = 경청표 No.  (메인 카드·weekly 드롭다운·WP 취합/ZIP 순서 공용)
  * - 칸 위치는 제목 줄(No. / 회사명 / 전문분야)을 찾아서 정한다. 못 찾으면 반영하지 않고 멈춘다.
  *
@@ -171,7 +171,7 @@
         rows.push({
           kind: specChanged ? 'spec' : (orderChanged ? 'order' : 'same'),
           member: m, sheet: x, newOrder: x.no,
-          specChanged, orderChanged, checked: false,
+          specChanged, orderChanged, checked: specChanged,
         });
       } else {
         rows.push({ kind: 'new', member: null, sheet: x, newOrder: x.no, checked: true });
